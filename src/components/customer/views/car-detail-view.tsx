@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { tr } from "@/lib/i18n";
-import { api, formatCurrency, parseFeatures, CAR_LOCATIONS, BOOKING_EXTRAS } from "@/lib/helpers";
+import { api, formatCurrency, parseFeatures } from "@/lib/helpers";
 import { Car, Review } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,11 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
   Star, Heart, Share2, ArrowLeft, ArrowRight, Users, Settings, Fuel,
   DoorOpen, Gauge, Timer, TrendingUp, CheckCircle2, Calendar, MapPin,
-  Shield, Clock,
+  Shield, Clock, PenLine,
 } from "lucide-react";
 
 export function CarDetailView() {
@@ -25,6 +28,11 @@ export function CarDetailView() {
   const [car, setCar] = useState<Car | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState("5");
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewTripType, setReviewTripType] = useState("Business");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     if (!selectedCarId) { setCustomerView("browse"); return; }
@@ -42,6 +50,31 @@ export function CarDetailView() {
     });
     setCustomerView("booking");
     window.scrollTo(0, 0);
+  };
+
+  const handleSubmitReview = async () => {
+    if (!user || !car) return;
+    if (!reviewComment.trim()) { toast.error(isRtl ? "اكتب تعليقًا" : "Please write a comment"); return; }
+    setSubmittingReview(true);
+    try {
+      const res = await api<{ review: Review }>("/api/reviews", {
+        method: "POST",
+        body: JSON.stringify({
+          userId: user.id,
+          carId: car.id,
+          rating: Number(reviewRating),
+          comment: reviewComment,
+          tripType: reviewTripType,
+        }),
+      });
+      setReviews([res.review, ...reviews]);
+      setShowReviewForm(false);
+      setReviewComment("");
+      setReviewRating("5");
+      toast.success(isRtl ? "تم إضافة تقييمك" : "Review added");
+    } catch (e) {
+      toast.error(isRtl ? "فشل إضافة التقييم" : "Failed to add review");
+    } finally { setSubmittingReview(false); }
   };
 
   if (loading) return <div className="container mx-auto px-4 py-8"><Skeleton className="h-96 rounded-xl mb-6" /><div className="grid md:grid-cols-2 gap-6"><Skeleton className="h-64 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div></div>;
@@ -132,9 +165,16 @@ export function CarDetailView() {
                     <p className="text-sm text-muted-foreground">{r.comment}</p>
                   </Card>
                 ))}
-                <Button variant="outline" className="w-full" onClick={() => {}}>
-                  {tr("detail_view_all_reviews", lang)}
-                </Button>
+                <div className="flex gap-2">
+                  {user && (
+                    <Button variant="default" className="flex-1" onClick={() => setShowReviewForm(true)}>
+                      <PenLine className="h-4 w-4 mr-1" /> {isRtl ? "اكتب تقييمًا" : "Write a Review"}
+                    </Button>
+                  )}
+                  <Button variant="outline" className="flex-1" onClick={() => {}}>
+                    {tr("detail_view_all_reviews", lang)}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -160,6 +200,55 @@ export function CarDetailView() {
           </Card>
         </div>
       </div>
+
+      {/* Review Writing Dialog */}
+      <Dialog open={showReviewForm} onOpenChange={setShowReviewForm}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{isRtl ? "اكتب تقييمًا" : "Write a Review"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label className="text-xs">{isRtl ? "التقييم" : "Rating"}</Label>
+              <Select value={reviewRating} onValueChange={setReviewRating}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[5, 4, 3, 2, 1].map((n) => (
+                    <SelectItem key={n} value={String(n)}>{n} ★</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">{isRtl ? "نوع الرحلة" : "Trip Type"}</Label>
+              <Select value={reviewTripType} onValueChange={setReviewTripType}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Business">{isRtl ? "عمل" : "Business"}</SelectItem>
+                  <SelectItem value="Family">{isRtl ? "عائلي" : "Family"}</SelectItem>
+                  <SelectItem value="Road trip">{isRtl ? "رحلة برية" : "Road trip"}</SelectItem>
+                  <SelectItem value="Weekend">{isRtl ? "عطلة نهاية الأسبوع" : "Weekend"}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">{isRtl ? "تعليقك" : "Your comment"}</Label>
+              <Textarea
+                rows={4}
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                placeholder={isRtl ? "شارك تجربتك..." : "Share your experience..."}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowReviewForm(false)}>{isRtl ? "إلغاء" : "Cancel"}</Button>
+            <Button onClick={handleSubmitReview} disabled={submittingReview}>
+              {submittingReview ? (isRtl ? "جارٍ الإرسال..." : "Submitting...") : (isRtl ? "إرسال" : "Submit")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

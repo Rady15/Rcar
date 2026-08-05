@@ -36,7 +36,26 @@ export function LoginView() {
       }
       window.scrollTo(0, 0);
     } catch (e) {
-      toast.error(tr("login_failed", lang), { description: e instanceof Error ? e.message : tr("login_check", lang) });
+      // If login fails and we're in signup mode, try registering
+      if (mode === "signup" && name) {
+        try {
+          const regRes = await api<{ user: any }>("/api/auth/register", {
+            method: "POST",
+            body: JSON.stringify({ email, password, name, phone }),
+          });
+          setUser(regRes.user);
+          setCustomerView("home");
+          toast.success(`${tr("login_welcome_back", lang)}, ${regRes.user.name.split(" ")[0]}!`);
+          window.scrollTo(0, 0);
+          return;
+        } catch (regErr) {
+          toast.error(isRtl ? "فشل إنشاء الحساب" : "Registration failed", {
+            description: regErr instanceof Error ? regErr.message : "",
+          });
+        }
+      } else {
+        toast.error(tr("login_failed", lang), { description: e instanceof Error ? e.message : tr("login_check", lang) });
+      }
     } finally { setLoading(false); }
   };
 

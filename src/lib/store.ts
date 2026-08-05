@@ -22,7 +22,7 @@ export type CustomerView =
 
 export type AdminView =
   | "dashboard" | "cars" | "bookings" | "customers" | "reviews"
-  | "deals" | "content" | "settings";
+  | "deals" | "content" | "categories" | "settings";
 
 interface AppState {
   platform: "customer" | "admin";

@@ -70,11 +70,19 @@ model Booking {
   insuranceFee   Float
   serviceFee     Float
   total          Float
-  status         String   @default("UPCOMING")
+  status         String   @default("PENDING_PAYMENT")
   bookingCode    String
   extras         String
   paymentMethod  String?
   paymentStatus  String   @default("PENDING")
+  pickupOtp      String?
+  returnOtp      String?
+  startMileage   Int?
+  endMileage     Int?
+  inspectionNotes String?
+  lateFee        Float    @default(0)
+  refundAmount   Float?
+  refundStatus   String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -127,4 +135,17 @@ model SiteContent {
   branding     String
   seo          String
   updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  nameAr      String
+  slug        String   @unique
+  imageUrl    String
+  description String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

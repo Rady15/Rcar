@@ -77,7 +77,7 @@ export function DealsAdminView() {
               <div><Label className="text-xs">Promo code</Label><Input value={form.promoCode} onChange={(e) => setForm({ ...form, promoCode: e.target.value.toUpperCase() })} placeholder="WEEKEND25" /></div>
               <div><Label className="text-xs">End date</Label><Input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} /></div>
             </div>
-            <div><Label className="text-xs">Linked car (optional)</Label><Select value={form.carId} onValueChange={(v) => setForm({ ...form, carId: v })}><SelectTrigger><SelectValue placeholder="No specific car" /></SelectTrigger><SelectContent><SelectItem value="">No specific car</SelectItem>{cars.map((c) => <SelectItem key={c.id} value={c.id}>{c.brand} {c.model}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label className="text-xs">Linked car (optional)</Label><Select value={form.carId || "none"} onValueChange={(v) => setForm({ ...form, carId: v === "none" ? "" : v })}><SelectTrigger><SelectValue placeholder="No specific car" /></SelectTrigger><SelectContent><SelectItem value="none">No specific car</SelectItem>{cars.map((c) => <SelectItem key={c.id} value={c.id}>{c.brand} {c.model}</SelectItem>)}</SelectContent></Select></div>
           </div>
           <DialogFooter><Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button><Button onClick={handleSave}>Create deal</Button></DialogFooter>
         </DialogContent>

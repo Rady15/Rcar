@@ -1,0 +1,18 @@
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+
+export async function PATCH(req: NextRequest) {
+  const body = await req.json();
+  const { id, ...update } = body;
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  const category = await db.category.update({ where: { id }, data: update });
+  return NextResponse.json({ category });
+}
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  await db.category.delete({ where: { id } });
+  return NextResponse.json({ success: true });
+}

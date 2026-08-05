@@ -32,7 +32,7 @@ export function PaymentView() {
     setProcessing(true);
     await new Promise((r) => setTimeout(r, 1800));
     try {
-      await api(`/api/bookings/${booking.id}`, { method: "PATCH", body: JSON.stringify({ id: booking.id, paymentMethod: method, paymentStatus: "PAID" }) });
+      await api(`/api/bookings/${booking.id}`, { method: "PATCH", body: JSON.stringify({ id: booking.id, paymentMethod: method, paymentStatus: "PAID", status: "UPCOMING" }) });
       toast.success(tr("payment_success", lang), { description: `${tr("payment_confirmed", lang)} ${booking.bookingCode}` });
       setCustomerView("confirmation");
       window.scrollTo(0, 0);

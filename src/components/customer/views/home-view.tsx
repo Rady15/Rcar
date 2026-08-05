@@ -35,6 +35,17 @@ const HOW_ICONS: Record<HowItWorksStep["icon"], React.ComponentType<{ className?
   search: Search, calendar: Calendar, shield: Shield, zap: Zap, car: CarIcon, users: Users,
 };
 
+// Real car images for each category — used in the scrolling marquee
+const CATEGORY_IMAGES: Record<string, string> = {
+  sedan: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=600&q=80",
+  suv: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80",
+  sports: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80",
+  luxury: "https://images.unsplash.com/photo-1617788138017-80ad40656699?auto=format&fit=crop&w=600&q=80",
+  electric: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=600&q=80",
+  convertible: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=600&q=80",
+  van: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80",
+};
+
 export function HomeView() {
   const { setCustomerView, setSelectedCarId, setBrowseCategory, setHomeScrollTarget, homeScrollTarget, lang } = useAppStore();
   const isRtl = lang === "ar";
@@ -116,29 +127,69 @@ export function HomeView() {
         </section>
       )}
 
-      <section id="categories-section" className="container mx-auto px-4 py-20 md:py-28">
-        <Reveal className="max-w-2xl mb-12">
-          <Badge variant="secondary" className="mb-3"><Sparkles className="h-3 w-3 mr-1" /> {tr("section_find_fit", lang)}</Badge>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">
-            {tr("section_categories_title", lang).split(" ").slice(0, -1).join(" ")} <span className="text-primary italic font-serif">{tr("section_categories_title", lang).split(" ").slice(-1)}</span>
-          </h2>
-          <p className="text-muted-foreground mt-3 text-lg">{tr("section_categories_desc", lang)}</p>
-        </Reveal>
-        <Stagger className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {CAR_CATEGORIES.filter((c) => c.value !== "all").map((cat) => (
-            <StaggerItem key={cat.value}>
-              <button onClick={() => goToBrowseWithCategory(cat.value)} className={`group relative w-full overflow-hidden rounded-2xl border border-border bg-card p-6 md:p-8 ${isRtl ? "text-right" : "text-left"} hover:border-primary hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/40 text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"><CarIcon className="h-6 w-6" /></div>
-                  <p className="text-base md:text-lg font-semibold">{tr(`cat_${cat.value}`, lang)}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{tr(`browse_browse_${cat.value}`, lang)}</p>
-                  <ArrowRight className={`h-4 w-4 mt-3 text-muted-foreground group-hover:text-primary ${isRtl ? "group-hover:-translate-x-1" : "group-hover:translate-x-1"} transition-all`} />
-                </div>
-              </button>
-            </StaggerItem>
-          ))}
-        </Stagger>
+      {/* CATEGORIES — Real car images + horizontal scrolling marquee */}
+      <section id="categories-section" className="py-20 md:py-28 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <Reveal className="max-w-2xl mb-10">
+            <Badge variant="secondary" className="mb-3"><Sparkles className="h-3 w-3 mr-1" /> {tr("section_find_fit", lang)}</Badge>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">
+              {tr("section_categories_title", lang).split(" ").slice(0, -1).join(" ")} <span className="text-primary italic font-serif">{tr("section_categories_title", lang).split(" ").slice(-1)}</span>
+            </h2>
+            <p className="text-muted-foreground mt-3 text-lg">{tr("section_categories_desc", lang)}</p>
+          </Reveal>
+        </div>
+
+        {/* Marquee container — full width, overflows hidden */}
+        <div className="relative" dir={isRtl ? "rtl" : "ltr"}>
+          {/* Edge fade overlays */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+
+          {/* Scrolling track */}
+          <motion.div
+            className="flex gap-4 md:gap-6 w-max"
+            animate={{ x: isRtl ? ["-50%", "0%"] : ["0%", "-50%"] }}
+            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            style={{ willChange: "transform" }}
+          >
+            {/* Render categories twice for seamless loop */}
+            {[...CAR_CATEGORIES.filter((c) => c.value !== "all"), ...CAR_CATEGORIES.filter((c) => c.value !== "all")].map((cat, i) => {
+              const img = CATEGORY_IMAGES[cat.value] || CATEGORY_IMAGES["sedan"];
+              return (
+                <button
+                  key={`${cat.value}-${i}`}
+                  onClick={() => goToBrowseWithCategory(cat.value)}
+                  className="group relative shrink-0 w-72 md:w-80 h-48 md:h-56 rounded-2xl overflow-hidden border border-border hover:border-primary hover:shadow-2xl transition-all duration-300"
+                >
+                  {/* Real car image */}
+                  <img
+                    src={img}
+                    alt={tr(`cat_${cat.value}`, lang)}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  {/* Gradient overlay for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                  {/* Category label — bottom */}
+                  <div className={`absolute bottom-0 ${isRtl ? "right-0" : "left-0"} p-5 ${isRtl ? "text-right" : "text-left"}`}>
+                    <p className="text-2xl font-extrabold text-white drop-shadow-lg">{tr(`cat_${cat.value}`, lang)}</p>
+                    <p className="text-sm text-white/80 mt-0.5">{tr(`browse_browse_${cat.value}`, lang)}</p>
+                    <div className="flex items-center gap-1 mt-2 text-primary-foreground">
+                      <span className="text-xs font-semibold bg-primary/80 backdrop-blur px-2 py-1 rounded-full">
+                        {isRtl ? "تصفّح الآن" : "Browse now"}
+                      </span>
+                      <ArrowRight className={`h-3.5 w-3.5 ${isRtl ? "rotate-180" : ""} group-hover:translate-x-1 transition-transform`} />
+                    </div>
+                  </div>
+
+                  {/* Hover shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-transparent transition-all duration-500" />
+                </button>
+              );
+            })}
+          </motion.div>
+        </div>
       </section>
 
       <section id="featured-section" className="border-y border-border bg-gradient-to-b from-accent/10 via-background to-background py-20 md:py-28">

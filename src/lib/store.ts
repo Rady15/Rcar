@@ -101,7 +101,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "rentdrive-store",
-      partialize: (s) => ({ platform: s.platform, user: s.user, favorites: s.favorites }),
+      partialize: (s) => ({ platform: s.platform, user: s.user, favorites: s.favorites, lang: s.lang }),
     }
   )
 );

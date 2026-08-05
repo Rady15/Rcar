@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarCard } from "@/components/shared/car-card";
+import { YeloHero } from "@/components/customer/yelo-hero";
 import {
   Reveal, Stagger, StaggerItem, MagneticWrap, useScrollToSection, ScrollProgress,
 } from "@/components/shared/motion-primitives";
@@ -83,11 +84,8 @@ export function HomeView() {
   return (
     <div className="relative">
       <ScrollProgress />
-      <HeroSection
-        ref={heroRef}
-        hero={content.hero}
-        onBrowse={() => scrollTo("categories-section")}
-        onDeals={() => setCustomerView("deals")}
+      <YeloHero
+        onSearch={() => scrollTo("categories-section")}
         onSignIn={() => setCustomerView("login")}
       />
 

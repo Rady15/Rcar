@@ -3,24 +3,14 @@
 import { useState, useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/lib/store";
+import { tr } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { YeloNavbar } from "@/components/customer/yelo-navbar";
 import {
-  Car as CarIcon,
-  Search,
-  MapPin,
-  Calendar,
-  Clock,
-  ArrowLeft,
-  MessageCircle,
-  ChevronDown,
-  Phone,
-  Headphones,
-  Wallet,
-  Truck,
+  Car as CarIcon, Search, MapPin, Calendar, Clock, ArrowLeft, ArrowRight,
+  MessageCircle, ChevronDown, Phone, Headphones, Wallet, Truck,
 } from "lucide-react";
 import { CAR_LOCATIONS } from "@/lib/helpers";
 
@@ -31,14 +21,6 @@ interface YeloHeroProps {
 
 type TabId = "search" | "consultations" | "rental" | "longterm" | "paycollect";
 
-const TABS: { id: TabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "search", label: "ابحث الآن", icon: Search },
-  { id: "consultations", label: "الاستشارات السيارة", icon: Headphones },
-  { id: "rental", label: "إيجار الحجز", icon: Calendar },
-  { id: "longterm", label: "تأجير طويل الأجل", icon: Clock },
-  { id: "paycollect", label: "باي واستلم", icon: Wallet },
-];
-
 export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -46,72 +28,73 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
   const imageY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 100]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, reduce ? 1 : 0]);
 
+  const {
+    lang, setCustomerView, setBrowseCategory, setSearchDraft,
+  } = useAppStore();
+  const isRtl = lang === "ar";
+
   const [activeTab, setActiveTab] = useState<TabId>("search");
   const [location, setLocation] = useState("");
+  const [dropoffLocation, setDropoffLocation] = useState("");
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
-  const [carModel, setCarModel] = useState("");
+  const [carType, setCarType] = useState("");
   const [rentalMonths, setRentalMonths] = useState("1");
   const [phone, setPhone] = useState("");
-  const { setCustomerView, setBrowseCategory } = useAppStore();
+  const [bookingCode, setBookingCode] = useState("");
 
-  const handleSearch = () => {
+  const TABS: { id: TabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { id: "search", label: tr("tab_search", lang), icon: Search },
+    { id: "consultations", label: tr("tab_consultations", lang), icon: Headphones },
+    { id: "rental", label: tr("tab_rental", lang), icon: Calendar },
+    { id: "longterm", label: tr("tab_longterm", lang), icon: Clock },
+    { id: "paycollect", label: tr("tab_paycollect", lang), icon: Wallet },
+  ];
+
+  // Wire the search form to the Browse view by storing the search draft
+  const goToBrowse = (draft: { location: string; pickupDate: string; returnDate: string; carType: string }) => {
+    setSearchDraft(draft);
     setBrowseCategory("all");
     setCustomerView("browse");
     window.scrollTo(0, 0);
   };
 
-  const handleConsultation = () => {
-    setCustomerView("browse");
-    window.scrollTo(0, 0);
-  };
+  const handleSearch = () => goToBrowse({ location, pickupDate, returnDate, carType: "" });
+  const handleConsultation = () => { setBrowseCategory("all"); setCustomerView("browse"); window.scrollTo(0, 0); };
+  const handleRental = () => goToBrowse({ location, pickupDate, returnDate, carType: "" });
+  const handleLongTerm = () => goToBrowse({ location, pickupDate: rentalMonths, returnDate: "", carType });
+  const handlePayCollect = () => { setCustomerView("my-trips"); window.scrollTo(0, 0); };
 
-  const handleRental = () => {
-    setBrowseCategory("all");
-    setCustomerView("browse");
-    window.scrollTo(0, 0);
-  };
-
-  const handleLongTerm = () => {
-    setBrowseCategory("all");
-    setCustomerView("browse");
-    window.scrollTo(0, 0);
-  };
-
-  const handlePayCollect = () => {
-    setCustomerView("browse");
-    window.scrollTo(0, 0);
-  };
+  const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   return (
     <section
       ref={ref}
-      dir="rtl"
+      dir={isRtl ? "rtl" : "ltr"}
       className="relative min-h-screen flex flex-col overflow-hidden bg-background"
       style={{ fontFamily: "var(--font-arabic), 'Tajawal', 'Cairo', system-ui, sans-serif" }}
     >
-      {/* Background image with parallax */}
+      {/* Background image */}
       <motion.div className="absolute inset-0 z-0" style={{ y: imageY }}>
         <img
           src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
           alt="Premium car at sunset"
           className="w-full h-[110%] object-cover"
         />
-        {/* Top gradient for nav readability */}
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/60 to-transparent" />
-        {/* Bottom gradient to ground the search widget */}
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
       </motion.div>
 
-      {/* Yelo Navbar (transparent over hero) */}
       <YeloNavbar />
 
-      {/* Floating headline (top-right, RTL) */}
+      {/* Headline */}
       <motion.div
         style={{ opacity: textOpacity }}
-        className="relative z-10 flex-1 flex items-start justify-end px-6 md:px-16 pt-28 md:pt-36"
+        className={isRtl
+          ? "relative z-10 flex-1 flex items-start justify-end px-6 md:px-16 pt-28 md:pt-36"
+          : "relative z-10 flex-1 flex items-start justify-start px-6 md:px-16 pt-28 md:pt-36"}
       >
-        <div className="max-w-2xl text-right">
+        <div className={isRtl ? "max-w-2xl text-right" : "max-w-2xl text-left"}>
           <motion.h1
             initial={reduce ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -119,21 +102,23 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
             className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight tracking-tight"
             style={{ textShadow: "0 4px 20px rgba(0,0,0,0.4)" }}
           >
-            تجربة قيادة تُؤهِّلك
+            {tr("hero_title", lang)}
           </motion.h1>
           <motion.p
             initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-base md:text-lg text-white/90 mt-4 max-w-md mr-auto"
+            className={isRtl
+              ? "text-base md:text-lg text-white/90 mt-4 max-w-md mr-auto"
+              : "text-base md:text-lg text-white/90 mt-4 max-w-md ml-auto"}
             style={{ textShadow: "0 2px 10px rgba(0,0,0,0.4)" }}
           >
-            استأجر سيارة فاخرة في دقائق — مع التوصيل لباب منزلك
+            {tr("hero_subtitle", lang)}
           </motion.p>
         </div>
       </motion.div>
 
-      {/* Tabbed search widget (centered, bottom) */}
+      {/* Tabbed search widget */}
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -141,7 +126,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
         className="relative z-20 px-4 md:px-6 pb-10 md:pb-16"
       >
         <div className="max-w-5xl mx-auto">
-          {/* Tab bar (purple, attached to top of white card) */}
+          {/* Tab bar */}
           <div className="flex flex-wrap gap-1 bg-primary rounded-t-2xl p-2 shadow-lg overflow-x-auto">
             {TABS.map((tab) => {
               const Icon = tab.icon;
@@ -151,9 +136,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-3 md:px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
-                    isActive
-                      ? "bg-white text-primary shadow-sm"
-                      : "text-white/90 hover:bg-white/10"
+                    isActive ? "bg-white text-primary shadow-sm" : "text-white/90 hover:bg-white/10"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -163,82 +146,82 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
             })}
           </div>
 
-          {/* White search card — content changes per tab */}
+          {/* White search card */}
           <div className="bg-white rounded-b-2xl rounded-tr-none shadow-2xl p-5 md:p-6" style={{ boxShadow: "0 20px 50px rgba(0,0,0,0.3)" }}>
-            {/* SEARCH NOW TAB */}
+            {/* SEARCH NOW */}
             {activeTab === "search" && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_auto] gap-4 items-end">
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">موقع الاستلام و التسليم</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_location", lang)}</Label>
                     <div className="relative">
-                      <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <MapPin className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                       <select
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        className="w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"}
                       >
-                        <option value="">حدد المدينة</option>
+                        <option value="">{tr("field_location_placeholder", lang)}</option>
                         {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
                       </select>
-                      <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <ChevronDown className={isRtl ? "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" : "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"} />
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">تاريخ و وقت الاستلام</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_pickup_date", lang)}</Label>
                     <div className="relative">
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="datetime-local" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="pr-10 py-2.5 text-sm" />
+                      <Calendar className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <Input type="datetime-local" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className={isRtl ? "pr-10 py-2.5 text-sm" : "pl-10 py-2.5 text-sm"} />
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">تاريخ و وقت التسليم</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_return_date", lang)}</Label>
                     <div className="relative">
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="datetime-local" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className="pr-10 py-2.5 text-sm" />
+                      <Calendar className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <Input type="datetime-local" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className={isRtl ? "pr-10 py-2.5 text-sm" : "pl-10 py-2.5 text-sm"} />
                     </div>
                   </div>
                   <Button onClick={handleSearch} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-8 h-[42px] rounded-lg shadow-md">
-                    <ArrowLeft className="h-4 w-4 ml-1" /> ابحث
+                    <ArrowIcon className="h-4 w-4 mr-1" /> {tr("btn_search", lang)}
                   </Button>
                 </div>
-                <div className="flex items-center gap-2 mt-4 justify-end">
+                <div className={isRtl ? "flex items-center gap-2 mt-4 justify-end" : "flex items-center gap-2 mt-4 justify-start"}>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <span className="text-xs text-muted-foreground">العودة لنفس الموقع</span>
+                    <span className="text-xs text-muted-foreground">{tr("cb_same_location", lang)}</span>
                     <input type="checkbox" defaultChecked className="h-4 w-4 rounded border-muted-foreground/40 accent-accent cursor-pointer" />
                   </label>
                 </div>
               </>
             )}
 
-            {/* CAR CONSULTATIONS TAB */}
+            {/* CONSULTATIONS */}
             {activeTab === "consultations" && (
               <>
-                <div className="mb-4 text-right">
-                  <h3 className="text-lg font-bold text-foreground">استشارات سيارات مجانية</h3>
-                  <p className="text-sm text-muted-foreground mt-1">فريقنا جاهز لمساعدتك في اختيار السيارة المناسبة لاحتياجاتك</p>
+                <div className={isRtl ? "mb-4 text-right" : "mb-4 text-left"}>
+                  <h3 className="text-lg font-bold text-foreground">{tr("cons_title", lang)}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{tr("cons_desc", lang)}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">الاسم الكامل</Label>
-                    <Input placeholder="اكتب اسمك" className="py-2.5 text-sm" />
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_name", lang)}</Label>
+                    <Input placeholder={tr("field_name_placeholder", lang)} className="py-2.5 text-sm" />
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">رقم الجوال</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_phone", lang)}</Label>
                     <div className="relative">
-                      <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="tel" placeholder="05xxxxxxxx" value={phone} onChange={(e) => setPhone(e.target.value)} className="pr-10 py-2.5 text-sm" />
+                      <Phone className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <Input type="tel" placeholder={tr("field_phone_placeholder", lang)} value={phone} onChange={(e) => setPhone(e.target.value)} className={isRtl ? "pr-10 py-2.5 text-sm" : "pl-10 py-2.5 text-sm"} />
                     </div>
                   </div>
                   <Button onClick={handleConsultation} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-8 h-[42px] rounded-lg shadow-md">
-                    <Headphones className="h-4 w-4 ml-1" /> اطلب استشارة
+                    <Headphones className="h-4 w-4 mr-1" /> {tr("btn_request_consultation", lang)}
                   </Button>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mt-5">
                   {[
-                    { icon: Headphones, label: "استشارة هاتفية", desc: "خلال 30 دقيقة" },
-                    { icon: CarIcon, label: "معاينة السيارة", desc: "في معرضنا" },
-                    { icon: Search, label: "تقرير مفصّل", desc: "مقارنة شاملة" },
+                    { icon: Headphones, label: tr("cons_phone", lang), desc: tr("cons_phone_desc", lang) },
+                    { icon: CarIcon, label: tr("cons_inspect", lang), desc: tr("cons_inspect_desc", lang) },
+                    { icon: Search, label: tr("cons_report", lang), desc: tr("cons_report_desc", lang) },
                   ].map((item) => {
                     const Icon = item.icon;
                     return (
@@ -255,117 +238,109 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
               </>
             )}
 
-            {/* RENTAL BOOKING TAB */}
+            {/* RENTAL BOOKING */}
             {activeTab === "rental" && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4 items-end">
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">موقع الاستلام</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_pickup_location", lang)}</Label>
                     <div className="relative">
-                      <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <select className="w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer">
-                        <option value="">حدد المدينة</option>
+                      <MapPin className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <select value={location} onChange={(e) => setLocation(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
+                        <option value="">{tr("field_location_placeholder", lang)}</option>
                         {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
                       </select>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">موقع التسليم</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_dropoff_location", lang)}</Label>
                     <div className="relative">
-                      <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <select className="w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer">
-                        <option value="">حدد المدينة</option>
+                      <MapPin className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <select value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
+                        <option value="">{tr("field_location_placeholder", lang)}</option>
                         {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
                       </select>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">تاريخ الاستلام</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_pickup_date_short", lang)}</Label>
                     <div className="relative">
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="date" className="pr-10 py-2.5 text-sm" />
+                      <Calendar className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <Input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className={isRtl ? "pr-10 py-2.5 text-sm" : "pl-10 py-2.5 text-sm"} />
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">تاريخ التسليم</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_dropoff_date_short", lang)}</Label>
                     <div className="relative">
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="date" className="pr-10 py-2.5 text-sm" />
+                      <Calendar className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <Input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className={isRtl ? "pr-10 py-2.5 text-sm" : "pl-10 py-2.5 text-sm"} />
                     </div>
                   </div>
                   <Button onClick={handleRental} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-8 h-[42px] rounded-lg shadow-md">
-                    <ArrowLeft className="h-4 w-4 ml-1" /> احجز
+                    <ArrowIcon className="h-4 w-4 mr-1" /> {tr("btn_book", lang)}
                   </Button>
                 </div>
-                <div className="flex items-center gap-2 mt-4 justify-end">
+                <div className={isRtl ? "flex items-center gap-2 mt-4 justify-end" : "flex items-center gap-2 mt-4 justify-start"}>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <span className="text-xs text-muted-foreground">استلام من نفس الموقع</span>
+                    <span className="text-xs text-muted-foreground">{tr("cb_same_pickup", lang)}</span>
                     <input type="checkbox" defaultChecked className="h-4 w-4 rounded border-muted-foreground/40 accent-accent cursor-pointer" />
                   </label>
                 </div>
               </>
             )}
 
-            {/* LONG-TERM RENTAL TAB */}
+            {/* LONG-TERM */}
             {activeTab === "longterm" && (
               <>
-                <div className="mb-4 text-right">
-                  <h3 className="text-lg font-bold text-foreground">تأجير طويل الأجل</h3>
-                  <p className="text-sm text-muted-foreground mt-1">وفّر أكثر مع اشتراك شهري — يشمل الصيانة والتأمين</p>
+                <div className={isRtl ? "mb-4 text-right" : "mb-4 text-left"}>
+                  <h3 className="text-lg font-bold text-foreground">{tr("lt_title", lang)}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{tr("lt_desc", lang)}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end">
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">نوع السيارة</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_car_type", lang)}</Label>
                     <div className="relative">
-                      <CarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <select
-                        value={carModel}
-                        onChange={(e) => setCarModel(e.target.value)}
-                        className="w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"
-                      >
-                        <option value="">اختر الفئة</option>
-                        <option value="sedan">سيدان</option>
-                        <option value="suv">دفع رباعي</option>
-                        <option value="luxury">فاخرة</option>
-                        <option value="electric">كهربائية</option>
+                      <CarIcon className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <select value={carType} onChange={(e) => setCarType(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
+                        <option value="">{tr("field_location_placeholder", lang)}</option>
+                        <option value="sedan">{tr("lt_type_sedan", lang)}</option>
+                        <option value="suv">{tr("lt_type_suv", lang)}</option>
+                        <option value="luxury">{tr("lt_type_luxury", lang)}</option>
+                        <option value="electric">{tr("lt_type_electric", lang)}</option>
                       </select>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">مدة الاشتراك</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_duration", lang)}</Label>
                     <div className="relative">
-                      <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <select
-                        value={rentalMonths}
-                        onChange={(e) => setRentalMonths(e.target.value)}
-                        className="w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"
-                      >
-                        <option value="1">شهر واحد</option>
-                        <option value="3">3 أشهر (وفّر 10%)</option>
-                        <option value="6">6 أشهر (وفّر 20%)</option>
-                        <option value="12">سنة كاملة (وفّر 30%)</option>
+                      <Clock className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <select value={rentalMonths} onChange={(e) => setRentalMonths(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
+                        <option value="1">{tr("lt_month_1", lang)}</option>
+                        <option value="3">{tr("lt_month_3", lang)}</option>
+                        <option value="6">{tr("lt_month_6", lang)}</option>
+                        <option value="12">{tr("lt_month_12", lang)}</option>
                       </select>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">المدينة</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_city", lang)}</Label>
                     <div className="relative">
-                      <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <select className="w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer">
-                        <option value="">حدد المدينة</option>
+                      <MapPin className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <select value={location} onChange={(e) => setLocation(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
+                        <option value="">{tr("field_location_placeholder", lang)}</option>
                         {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
                       </select>
                     </div>
                   </div>
                   <Button onClick={handleLongTerm} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-8 h-[42px] rounded-lg shadow-md">
-                    <ArrowLeft className="h-4 w-4 ml-1" /> اشترك
+                    <ArrowIcon className="h-4 w-4 mr-1" /> {tr("btn_subscribe", lang)}
                   </Button>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mt-5">
                   {[
-                    { label: "صيانة دورية", desc: "مجانية" },
-                    { label: "تأمين شامل", desc: "مشمول" },
-                    { label: "استبدال", desc: "كل 6 أشهر" },
+                    { label: tr("lt_maintenance", lang), desc: tr("lt_maintenance_desc", lang) },
+                    { label: tr("lt_insurance", lang), desc: tr("lt_insurance_desc", lang) },
+                    { label: tr("lt_replace", lang), desc: tr("lt_replace_desc", lang) },
                   ].map((item) => (
                     <div key={item.label} className="text-center p-3 rounded-lg border border-border bg-accent/10">
                       <p className="text-xs font-bold text-primary">{item.label}</p>
@@ -376,35 +351,35 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
               </>
             )}
 
-            {/* PAY & COLLECT TAB */}
+            {/* PAY & COLLECT */}
             {activeTab === "paycollect" && (
               <>
-                <div className="mb-4 text-right">
-                  <h3 className="text-lg font-bold text-foreground">باي واستلم</h3>
-                  <p className="text-sm text-muted-foreground mt-1">ادفع أونلاين واستلم سيارتك من أقرب معرض — بدون انتظار</p>
+                <div className={isRtl ? "mb-4 text-right" : "mb-4 text-left"}>
+                  <h3 className="text-lg font-bold text-foreground">{tr("pc_title", lang)}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{tr("pc_desc", lang)}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">رقم الحجز</Label>
-                    <Input placeholder="RD123456" className="py-2.5 text-sm font-mono" />
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_booking_code", lang)}</Label>
+                    <Input placeholder="RD123456" value={bookingCode} onChange={(e) => setBookingCode(e.target.value)} className="py-2.5 text-sm font-mono" />
                   </div>
-                  <div className="text-right">
-                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">معرض الاستلام</Label>
+                  <div className={isRtl ? "text-right" : "text-left"}>
+                    <Label className="text-xs font-semibold text-foreground mb-1.5 block">{tr("field_showroom", lang)}</Label>
                     <div className="relative">
-                      <Truck className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <select className="w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer">
-                        <option value="">اختر المعرض</option>
+                      <Truck className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
+                      <select className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
+                        <option value="">{tr("field_location_placeholder", lang)}</option>
                         {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
                       </select>
                     </div>
                   </div>
                   <Button onClick={handlePayCollect} size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-8 h-[42px] rounded-lg shadow-md">
-                    <Wallet className="h-4 w-4 ml-1" /> ادفع واستلم
+                    <Wallet className="h-4 w-4 mr-1" /> {tr("btn_pay_collect", lang)}
                   </Button>
                 </div>
-                <div className="flex items-center gap-2 mt-4 justify-end">
+                <div className={isRtl ? "flex items-center gap-2 mt-4 justify-end" : "flex items-center gap-2 mt-4 justify-start"}>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <span className="text-xs text-muted-foreground">استلام من نفس موقع التسليم</span>
+                    <span className="text-xs text-muted-foreground">{tr("cb_same_dropoff", lang)}</span>
                     <input type="checkbox" defaultChecked className="h-4 w-4 rounded border-muted-foreground/40 accent-accent cursor-pointer" />
                   </label>
                 </div>
@@ -422,7 +397,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => {}}
-        className="fixed bottom-6 left-6 z-50 h-14 w-14 rounded-full bg-primary shadow-xl flex items-center justify-center group"
+        className={isRtl ? "fixed bottom-6 left-6 z-50 h-14 w-14 rounded-full bg-primary shadow-xl flex items-center justify-center group" : "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-primary shadow-xl flex items-center justify-center group"}
         aria-label="Chat with us"
       >
         <MessageCircle className="h-6 w-6 text-accent" />

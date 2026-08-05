@@ -50,6 +50,17 @@ interface AppState {
   setBrowseCategory: (c: string) => void;
   homeScrollTarget: string | null;
   setHomeScrollTarget: (s: string | null) => void;
+  // Language: "ar" (default) | "en"
+  lang: "ar" | "en";
+  setLang: (l: "ar" | "en") => void;
+  // Search draft carried from hero to browse view
+  searchDraft: {
+    location: string;
+    pickupDate: string;
+    returnDate: string;
+    carType: string;
+  } | null;
+  setSearchDraft: (d: AppState["searchDraft"]) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -83,6 +94,10 @@ export const useAppStore = create<AppState>()(
       setBrowseCategory: (c) => set({ browseCategory: c }),
       homeScrollTarget: null,
       setHomeScrollTarget: (s) => set({ homeScrollTarget: s }),
+      lang: "ar",
+      setLang: (l) => set({ lang: l }),
+      searchDraft: null,
+      setSearchDraft: (d) => set({ searchDraft: d }),
     }),
     {
       name: "rentdrive-store",

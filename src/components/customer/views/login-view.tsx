@@ -9,9 +9,12 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Car, Mail, Lock, User as UserIcon, Sparkles } from "lucide-react";
+import { Car, Mail, Lock, User as UserIcon, Sparkles, ShieldCheck } from "lucide-react";
 
-const DEMO_ACCOUNTS = [{ email: "michael@example.com", password: "demo123", role: "Customer" }];
+const DEMO_ACCOUNTS = [
+  { email: "michael@example.com", password: "demo123", role: "Customer" },
+  { email: "admin@rentdrive.app", password: "admin123", role: "Admin" },
+];
 
 export function LoginView() {
   const { setUser, setCustomerView, setPlatform, setAdminView, lang } = useAppStore();
@@ -95,9 +98,20 @@ export function LoginView() {
         </div>
       </Card>
       <div className="mt-6">
-        <p className="text-xs text-center text-muted-foreground mb-2 flex items-center justify-center gap-1"><Sparkles className="h-3 w-3" />{tr("login_demo", lang)}</p>
-        <div className="grid grid-cols-1 gap-2">
-          {DEMO_ACCOUNTS.map((acc) => <Button key={acc.email} variant="outline" size="sm" onClick={() => fillDemo(acc)}>{acc.role} — {acc.email}</Button>)}
+        <p className="text-xs text-center text-muted-foreground mb-3 flex items-center justify-center gap-1"><Sparkles className="h-3 w-3" />{isRtl ? "دخول سريع كـ:" : "Quick login as:"}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {DEMO_ACCOUNTS.map((acc) => (
+            <Button
+              key={acc.email}
+              variant={acc.role === "Admin" ? "default" : "outline"}
+              size="sm"
+              onClick={() => fillDemo(acc)}
+              className="gap-1.5"
+            >
+              {acc.role === "Admin" ? <ShieldCheck className="h-3.5 w-3.5" /> : <UserIcon className="h-3.5 w-3.5" />}
+              {isRtl ? (acc.role === "Admin" ? "أدمن" : "عميل") : acc.role}
+            </Button>
+          ))}
         </div>
       </div>
     </div>

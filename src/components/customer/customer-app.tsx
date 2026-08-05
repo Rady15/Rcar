@@ -17,9 +17,12 @@ import { AccountView } from "./views/account-view";
 
 export function CustomerApp() {
   const view = useAppStore((s) => s.customerView);
+  // Home view renders its own transparent navbar (YeloNavbar) inside the hero.
+  // All other views use the standard CustomerHeader.
+  const showStandardHeader = view !== "home";
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <CustomerHeader />
+      {showStandardHeader && <CustomerHeader />}
       <main className="flex-1">
         {view === "home" && <HomeView />}
         {view === "browse" && <BrowseView />}

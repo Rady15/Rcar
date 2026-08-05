@@ -1,0 +1,130 @@
+// Prisma schema for RentDrive — car rental platform with customer site + admin panel
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  phone          String?
+  password       String
+  role           String   @default("CUSTOMER") // CUSTOMER | ADMIN
+  avatarUrl      String?
+  licenseNumber  String?
+  loyaltyPoints  Int      @default(120)
+  tier           String   @default("Gold")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  bookings Booking[]
+  reviews  Review[]
+}
+
+model Car {
+  id            String   @id @default(cuid())
+  brand         String
+  model         String
+  year          Int
+  pricePerDay   Float
+  category      String
+  transmission  String
+  fuelType      String
+  seats         Int
+  doors         Int
+  features      String
+  rating        Float    @default(4.5)
+  reviewCount   Int      @default(0)
+  color         String
+  description   String
+  imageUrl      String
+  isFeatured    Boolean  @default(false)
+  isAvailable   Boolean  @default(true)
+  horsePower    Int
+  topSpeed      Float
+  zeroToHundred Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookings Booking[]
+  reviews  Review[]
+  deals    Deal[]
+}
+
+model Booking {
+  id             String   @id @default(cuid())
+  userId         String
+  carId          String
+  pickupDate     DateTime
+  returnDate     DateTime
+  pickupLocation String
+  returnLocation String
+  daysCount      Int
+  pricePerDay    Float
+  subtotal       Float
+  insuranceFee   Float
+  serviceFee     Float
+  total          Float
+  status         String   @default("UPCOMING")
+  bookingCode    String
+  extras         String
+  paymentMethod  String?
+  paymentStatus  String   @default("PENDING")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  car  Car  @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([carId])
+  @@index([status])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  userId      String
+  carId       String
+  rating      Float
+  comment     String
+  tripType    String?
+  helpfulCount Int     @default(0)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  car  Car  @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+}
+
+model Deal {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  discountLabel   String
+  discountPercent Int
+  carId           String?
+  car             Car?     @relation(fields: [carId], references: [id], onDelete: SetNull)
+  promoCode       String
+  endDate         DateTime
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+}
+
+model SiteContent {
+  id           String   @id @default("singleton")
+  hero         String
+  stats        String
+  howItWorks   String
+  testimonials String
+  finalCta     String
+  footer       String
+  branding     String
+  seo          String
+  updatedAt    DateTime @updatedAt
+}

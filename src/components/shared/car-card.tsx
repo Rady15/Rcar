@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Car } from "@/lib/types";
 import { useAppStore } from "@/lib/store";
+import { tr } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,10 +17,15 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, onClick }: CarCardProps) {
-  const { favorites, toggleFavorite } = useAppStore();
+  const { favorites, toggleFavorite, lang } = useAppStore();
+  const isRtl = lang === "ar";
   const isFav = favorites.includes(car.id);
   const features = parseFeatures(car.features);
   const reduce = useReducedMotion();
+
+  const categoryLabel = tr(`cat_${car.category}`, lang);
+  const transmissionLabel = car.transmission === "automatic" ? tr("detail_auto", lang) : tr("detail_manual", lang);
+
   return (
     <motion.div
       whileHover={reduce ? undefined : { y: -6 }}
@@ -42,7 +48,9 @@ export function CarCard({ car, onClick }: CarCardProps) {
               {car.rating.toFixed(1)}
             </Badge>
             {car.isFeatured && (
-              <Badge className="bg-primary text-primary-foreground hover:bg-primary">Featured</Badge>
+              <Badge className="bg-primary text-primary-foreground hover:bg-primary">
+                {isRtl ? "مميزة" : "Featured"}
+              </Badge>
             )}
           </div>
           <Button
@@ -54,21 +62,21 @@ export function CarCard({ car, onClick }: CarCardProps) {
             <Heart className={`h-4 w-4 ${isFav ? "fill-red-500 text-red-500" : "text-gray-700"}`} />
           </Button>
         </div>
-        <div className="p-4 space-y-3">
+        <div className="p-4 space-y-3" dir={isRtl ? "rtl" : "ltr"}>
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <h3 className="font-semibold truncate">{car.brand} {car.model}</h3>
-              <p className="text-xs text-muted-foreground">{car.year} • {car.color} • {car.category}</p>
+              <p className="text-xs text-muted-foreground">{car.year} • {car.color} • {categoryLabel}</p>
             </div>
             <div className="text-right shrink-0">
               <div className="text-lg font-bold text-primary">{formatCurrency(car.pricePerDay)}</div>
-              <div className="text-xs text-muted-foreground">/day</div>
+              <div className="text-xs text-muted-foreground">{isRtl ? "/يوم" : "/day"}</div>
             </div>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {car.seats} seats</span>
-            <span className="flex items-center gap-1"><Settings className="h-3.5 w-3.5" /> {car.transmission === "automatic" ? "Auto" : "Manual"}</span>
-            <span className="flex items-center gap-1"><Fuel className="h-3.5 w-3.5" /> {car.fuelType}</span>
+            <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {car.seats} {isRtl ? "مقاعد" : "seats"}</span>
+            <span className="flex items-center gap-1"><Settings className="h-3.5 w-3.5" /> {transmissionLabel}</span>
+            <span className="flex items-center gap-1"><Fuel className="h-3.5 w-3.5" /> {tr(`fuel_${car.fuelType}`, lang)}</span>
           </div>
           {features.length > 0 && (
             <div className="flex flex-wrap gap-1">

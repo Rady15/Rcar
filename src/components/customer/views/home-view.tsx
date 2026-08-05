@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarCard } from "@/components/shared/car-card";
 import { YeloHero } from "@/components/customer/yelo-hero";
+import { tr } from "@/lib/i18n";
 import {
   Reveal, Stagger, StaggerItem, MagneticWrap, useScrollToSection, ScrollProgress,
 } from "@/components/shared/motion-primitives";
@@ -35,7 +36,8 @@ const HOW_ICONS: Record<HowItWorksStep["icon"], React.ComponentType<{ className?
 };
 
 export function HomeView() {
-  const { setCustomerView, setSelectedCarId, setBrowseCategory, setHomeScrollTarget, homeScrollTarget } = useAppStore();
+  const { setCustomerView, setSelectedCarId, setBrowseCategory, setHomeScrollTarget, homeScrollTarget, lang } = useAppStore();
+  const isRtl = lang === "ar";
   const [featured, setFeatured] = useState<Car[]>([]);
   const [popular, setPopular] = useState<Car[]>([]);
   const [cheap, setCheap] = useState<Car[]>([]);
@@ -82,7 +84,7 @@ export function HomeView() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" dir={isRtl ? "rtl" : "ltr"}>
       <ScrollProgress />
       <YeloHero
         onSearch={() => scrollTo("categories-section")}
@@ -94,12 +96,18 @@ export function HomeView() {
           <Stagger className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 py-8">
             {content.stats.map((s, i) => {
               const Icon = STAT_ICONS[s.icon] || CarIcon;
+              const labelMap: Record<string, string> = {
+                "Premium cars": tr("stat_premium_cars", lang),
+                "Trips completed": tr("stat_trips", lang),
+                "Average rating": tr("stat_rating", lang),
+                "Roadside help": tr("stat_support", lang),
+              };
               return (
                 <StaggerItem key={i} className="flex items-center gap-3 justify-center md:justify-start">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon className="h-5 w-5" /></div>
                   <div>
                     <p className="text-xl md:text-2xl font-bold leading-none">{s.value}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{labelMap[s.label] || s.label}</p>
                   </div>
                 </StaggerItem>
               );
@@ -110,22 +118,22 @@ export function HomeView() {
 
       <section id="categories-section" className="container mx-auto px-4 py-20 md:py-28">
         <Reveal className="max-w-2xl mb-12">
-          <Badge variant="secondary" className="mb-3"><Sparkles className="h-3 w-3 mr-1" /> Find your fit</Badge>
+          <Badge variant="secondary" className="mb-3"><Sparkles className="h-3 w-3 mr-1" /> {tr("section_find_fit", lang)}</Badge>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">
-            A car for every <span className="text-primary italic font-serif">occasion</span>
+            {tr("section_categories_title", lang).split(" ").slice(0, -1).join(" ")} <span className="text-primary italic font-serif">{tr("section_categories_title", lang).split(" ").slice(-1)}</span>
           </h2>
-          <p className="text-muted-foreground mt-3 text-lg">From fuel-sipping hybrids to roaring V8s — tap a category to jump straight into browsing.</p>
+          <p className="text-muted-foreground mt-3 text-lg">{tr("section_categories_desc", lang)}</p>
         </Reveal>
         <Stagger className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {CAR_CATEGORIES.filter((c) => c.value !== "all").map((cat) => (
             <StaggerItem key={cat.value}>
-              <button onClick={() => goToBrowseWithCategory(cat.value)} className="group relative w-full overflow-hidden rounded-2xl border border-border bg-card p-6 md:p-8 text-left hover:border-primary hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <button onClick={() => goToBrowseWithCategory(cat.value)} className={`group relative w-full overflow-hidden rounded-2xl border border-border bg-card p-6 md:p-8 ${isRtl ? "text-right" : "text-left"} hover:border-primary hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}>
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/40 text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"><CarIcon className="h-6 w-6" /></div>
-                  <p className="text-base md:text-lg font-semibold">{cat.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Browse {cat.label.toLowerCase()} cars</p>
-                  <ArrowRight className="h-4 w-4 mt-3 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                  <p className="text-base md:text-lg font-semibold">{tr(`cat_${cat.value}`, lang)}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{tr(`browse_browse_${cat.value}`, lang)}</p>
+                  <ArrowRight className={`h-4 w-4 mt-3 text-muted-foreground group-hover:text-primary ${isRtl ? "group-hover:-translate-x-1" : "group-hover:translate-x-1"} transition-all`} />
                 </div>
               </button>
             </StaggerItem>
@@ -137,11 +145,11 @@ export function HomeView() {
         <div className="container mx-auto px-4">
           <div className="flex items-end justify-between mb-10 gap-4">
             <Reveal>
-              <Badge variant="secondary" className="mb-3"><Star className="h-3 w-3 mr-1 fill-amber-500 text-amber-500" /> Editor&apos;s picks</Badge>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Featured cars</h2>
-              <p className="text-muted-foreground mt-2">Hand-selected, freshly detailed, ready to drive.</p>
+              <Badge variant="secondary" className="mb-3"><Star className="h-3 w-3 mr-1 fill-amber-500 text-amber-500" /> {tr("section_featured_badge", lang)}</Badge>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{tr("section_featured_title", lang)}</h2>
+              <p className="text-muted-foreground mt-2">{tr("section_featured_desc", lang)}</p>
             </Reveal>
-            <Button variant="ghost" className="hidden md:flex shrink-0" onClick={() => goToBrowseWithCategory("all")}>See all <ArrowRight className="h-4 w-4 ml-1" /></Button>
+            <Button variant="ghost" className="hidden md:flex shrink-0" onClick={() => goToBrowseWithCategory("all")}>{isRtl ? "عرض الكل" : "See all"} <ArrowRight className="h-4 w-4 ml-1" /></Button>
           </div>
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -153,7 +161,7 @@ export function HomeView() {
             </Stagger>
           )}
           <div className="md:hidden mt-6 text-center">
-            <Button variant="outline" onClick={() => goToBrowseWithCategory("all")}>See all cars <ArrowRight className="h-4 w-4 ml-1" /></Button>
+            <Button variant="outline" onClick={() => goToBrowseWithCategory("all")}>{isRtl ? "عرض كل السيارات" : "See all cars"} <ArrowRight className="h-4 w-4 ml-1" /></Button>
           </div>
         </div>
       </section>
@@ -161,18 +169,18 @@ export function HomeView() {
       {deals.length > 0 && (
         <section id="deals-section" className="container mx-auto px-4 py-20 md:py-28">
           <Reveal className="max-w-2xl mb-10">
-            <Badge className="mb-3 bg-primary text-primary-foreground"><Zap className="h-3 w-3 mr-1" /> Limited time</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Hot deals this week</h2>
-            <p className="text-muted-foreground mt-3 text-lg">Save up to 40% on selected cars. New promos drop every Monday.</p>
+            <Badge className="mb-3 bg-primary text-primary-foreground"><Zap className="h-3 w-3 mr-1" /> {tr("section_deals_badge", lang)}</Badge>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{tr("section_deals_title", lang)}</h2>
+            <p className="text-muted-foreground mt-3 text-lg">{tr("section_deals_desc", lang)}</p>
           </Reveal>
           <Stagger className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {deals.map((deal) => (
               <StaggerItem key={deal.id}>
-                <button onClick={() => setCustomerView("deals")} className="group block w-full text-left rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <button onClick={() => setCustomerView("deals")} className={`group block w-full ${isRtl ? "text-right" : "text-left"} rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}>
                   <div className="bg-gradient-to-br from-primary to-primary/80 p-5 text-primary-foreground">
                     <div className="flex items-center justify-between mb-2">
                       <Badge className="bg-primary-foreground text-primary">{deal.discountLabel}</Badge>
-                      <span className="text-xs opacity-80">Ends {new Date(deal.endDate).toLocaleDateString()}</span>
+                      <span className="text-xs opacity-80">{isRtl ? "ينتهي" : "Ends"} {new Date(deal.endDate).toLocaleDateString(isRtl ? "ar" : "en")}</span>
                     </div>
                     <h3 className="text-xl font-bold leading-tight">{deal.title}</h3>
                   </div>
@@ -180,7 +188,7 @@ export function HomeView() {
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{deal.description}</p>
                     <div className="flex items-center justify-between">
                       <code className="text-xs bg-muted px-2 py-1 rounded font-mono">{deal.promoCode}</code>
-                      <span className="text-xs text-primary font-medium flex items-center group-hover:translate-x-1 transition-transform">Claim <ArrowRight className="h-3 w-3 ml-1" /></span>
+                      <span className="text-xs text-primary font-medium flex items-center group-hover:translate-x-1 transition-transform">{tr("deals_claim", lang)} <ArrowRight className="h-3 w-3 ml-1" /></span>
                     </div>
                   </div>
                 </button>
@@ -194,9 +202,9 @@ export function HomeView() {
         <section id="how-section" className="border-y border-border bg-card py-20 md:py-28">
           <div className="container mx-auto px-4">
             <Reveal className="max-w-2xl mb-12">
-              <Badge variant="secondary" className="mb-3"><Calendar className="h-3 w-3 mr-1" /> 4 simple steps</Badge>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Booked in under <span className="text-primary">60 seconds</span></h2>
-              <p className="text-muted-foreground mt-3 text-lg">No queues, no paperwork at the counter. The whole flow lives in your pocket.</p>
+              <Badge variant="secondary" className="mb-3"><Calendar className="h-3 w-3 mr-1" /> {isRtl ? "4 خطوات بسيطة" : "4 simple steps"}</Badge>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{tr("section_how_title_1", lang)} <span className="text-primary">{tr("section_how_title_2", lang)}</span></h2>
+              <p className="text-muted-foreground mt-3 text-lg">{tr("section_how_desc", lang)}</p>
             </Reveal>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               {content.howItWorks.map((step, i) => {
@@ -204,7 +212,7 @@ export function HomeView() {
                 return (
                   <Reveal key={i} delay={i * 0.1}>
                     <div className="relative p-6 rounded-2xl border border-border bg-background h-full">
-                      <span className="absolute top-4 right-4 text-5xl font-bold text-muted/40 select-none">{step.step}</span>
+                      <span className={`absolute top-4 ${isRtl ? "left-4" : "right-4"} text-5xl font-bold text-muted/40 select-none`}>{step.step}</span>
                       <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4"><Icon className="h-6 w-6" /></div>
                       <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
@@ -220,9 +228,9 @@ export function HomeView() {
       <section id="popular-section" className="container mx-auto px-4 py-20 md:py-28">
         <div className="flex items-end justify-between mb-10 gap-4">
           <Reveal>
-            <Badge variant="secondary" className="mb-3"><TrendingUp className="h-3 w-3 mr-1" /> Trending now</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Popular right now</h2>
-            <p className="text-muted-foreground mt-2">The cars New Yorkers can&apos;t stop booking.</p>
+            <Badge variant="secondary" className="mb-3"><TrendingUp className="h-3 w-3 mr-1" /> {tr("section_popular_badge", lang)}</Badge>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{tr("section_popular_title", lang)}</h2>
+            <p className="text-muted-foreground mt-2">{tr("section_popular_desc", lang)}</p>
           </Reveal>
         </div>
         {loading ? (
@@ -240,9 +248,9 @@ export function HomeView() {
         <section id="testimonials-section" className="border-y border-border bg-gradient-to-b from-background via-accent/5 to-background py-20 md:py-28">
           <div className="container mx-auto px-4">
             <Reveal className="text-center max-w-2xl mx-auto mb-12">
-              <Badge variant="secondary" className="mb-3"><Quote className="h-3 w-3 mr-1" /> Real renters, real reviews</Badge>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Loved by <span className="text-primary italic font-serif">thousands</span></h2>
-              <p className="text-muted-foreground mt-3 text-lg">We&apos;ve moved 6,400+ renters across NYC. Here&apos;s what a few of them had to say.</p>
+              <Badge variant="secondary" className="mb-3"><Quote className="h-3 w-3 mr-1" /> {isRtl ? "مستأجرون حقيقيون، تقييمات حقيقية" : "Real renters, real reviews"}</Badge>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{tr("section_testimonials_title_1", lang)} <span className="text-primary italic font-serif">{tr("section_testimonials_title_2", lang)}</span></h2>
+              <p className="text-muted-foreground mt-3 text-lg">{tr("section_testimonials_desc", lang)}</p>
             </Reveal>
             <Stagger className="grid md:grid-cols-3 gap-4">
               {content.testimonials.map((t, i) => (
@@ -266,9 +274,9 @@ export function HomeView() {
 
       <section id="budget-section" className="container mx-auto px-4 py-20 md:py-28">
         <Reveal className="max-w-2xl mb-10">
-          <Badge variant="secondary" className="mb-3"><Award className="h-3 w-3 mr-1" /> Smart choices</Badge>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Budget picks under <span className="text-primary">$100/day</span></h2>
-          <p className="text-muted-foreground mt-3 text-lg">Big value, small price tag. Perfect for daily commutes and weekend getaways.</p>
+          <Badge variant="secondary" className="mb-3"><Award className="h-3 w-3 mr-1" /> {tr("section_budget_badge", lang)}</Badge>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{tr("section_budget_title", lang).split("$")[0]}<span className="text-primary">$100/{isRtl ? "يوم" : "day"}</span></h2>
+          <p className="text-muted-foreground mt-3 text-lg">{tr("section_budget_desc", lang)}</p>
         </Reveal>
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -281,7 +289,7 @@ export function HomeView() {
         )}
       </section>
 
-      <FinalCTA cta={content.finalCta} onGetStarted={() => setCustomerView("login")} onBrowse={() => goToBrowseWithCategory("all")} />
+      <FinalCTA cta={content.finalCta} onGetStarted={() => setCustomerView("login")} onBrowse={() => goToBrowseWithCategory("all")} lang={lang} />
     </div>
   );
 }
@@ -352,7 +360,12 @@ const HeroSection = (function HeroSection({
   } & React.RefAttributes<HTMLDivElement>
 >;
 
-function FinalCTA({ cta, onGetStarted, onBrowse }: { cta: SiteContent["finalCta"]; onGetStarted: () => void; onBrowse: () => void; }) {
+function FinalCTA({ cta, onGetStarted, onBrowse, lang }: { cta: SiteContent["finalCta"]; onGetStarted: () => void; onBrowse: () => void; lang: "ar" | "en"; }) {
+  const isRtl = lang === "ar";
+  const title = isRtl ? tr("section_cta_title", lang) : cta.title;
+  const subtitle = isRtl ? tr("section_cta_desc", lang) : cta.subtitle;
+  const primaryBtn = isRtl ? tr("section_cta_primary", lang) : cta.primaryBtn;
+  const secondaryBtn = isRtl ? tr("section_cta_secondary", lang) : cta.secondaryBtn;
   return (
     <section className="container mx-auto px-4 py-20 md:py-28">
       <Reveal>
@@ -360,13 +373,13 @@ function FinalCTA({ cta, onGetStarted, onBrowse }: { cta: SiteContent["finalCta"
           <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-accent/30 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-accent/20 blur-3xl" />
           <div className="relative text-center max-w-2xl mx-auto space-y-6">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{cta.title}</h2>
-            <p className="text-primary-foreground/80 text-lg">{cta.subtitle}</p>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">{title}</h2>
+            <p className="text-primary-foreground/80 text-lg">{subtitle}</p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
               <MagneticWrap>
-                <Button size="lg" variant="secondary" onClick={onGetStarted} className="text-base h-12 px-7">{cta.primaryBtn}</Button>
+                <Button size="lg" variant="secondary" onClick={onGetStarted} className="text-base h-12 px-7">{primaryBtn}</Button>
               </MagneticWrap>
-              <Button size="lg" variant="outline" onClick={onBrowse} className="text-base h-12 px-7 bg-transparent border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">{cta.secondaryBtn}</Button>
+              <Button size="lg" variant="outline" onClick={onBrowse} className="text-base h-12 px-7 bg-transparent border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">{secondaryBtn}</Button>
             </div>
           </div>
         </Card>

@@ -194,6 +194,21 @@ export const t = {
   cat_convertible: { ar: "كشف", en: "Convertible" },
   cat_van: { ar: "فان", en: "Van" },
 
+  // Fuel types
+  fuel_petrol: { ar: "بنزين", en: "petrol" },
+  fuel_diesel: { ar: "ديزل", en: "diesel" },
+  fuel_electric: { ar: "كهربائي", en: "electric" },
+  fuel_hybrid: { ar: "هجين", en: "hybrid" },
+
+  // Browse extras
+  browse_browse_sedan: { ar: "تصفّح سيارات سيدان", en: "Browse sedan cars" },
+  browse_browse_suv: { ar: "تصفّح سيارات دفع رباعي", en: "Browse suv cars" },
+  browse_browse_sports: { ar: "تصفّح السيارات الرياضية", en: "Browse sports cars" },
+  browse_browse_luxury: { ar: "تصفّح السيارات الفاخرة", en: "Browse luxury cars" },
+  browse_browse_electric: { ar: "تصفّح السيارات الكهربائية", en: "Browse electric cars" },
+  browse_browse_convertible: { ar: "تصفّح سيارات كشف", en: "Browse convertible cars" },
+  browse_browse_van: { ar: "تصفّح سيارات فان", en: "Browse van cars" },
+
   // Car detail
   detail_back: { ar: "العودة للتصفّح", en: "Back to browse" },
   detail_reviews: { ar: "تقييم", en: "reviews" },

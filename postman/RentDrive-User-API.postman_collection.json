@@ -1,0 +1,242 @@
+{
+  "info": {
+    "name": "RentDrive User API",
+    "_postman_id": "d4a9f7c3-2b6e-4d81-a5c2-8f3e6b9d1a04",
+    "description": "User/customer-facing API collection for RentDrive — covers the full account lifecycle: registration, login, profile, bookings and reviews.\n\n**Base URLs**\n- Local dev: `http://localhost:3000`\n- Production: `https://rcar-omega.vercel.app`\n\nSet the `baseUrl` collection variable to switch environments.\n\n**Seed accounts**\n- Customer: `michael@example.com` / `demo123`\n- Admin: `admin@rentdrive.app` / `admin123`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "customerEmail", "value": "michael@example.com" },
+    { "key": "customerPassword", "value": "demo123" },
+    { "key": "userId", "value": "" },
+    { "key": "carId", "value": "" },
+    { "key": "bookingId", "value": "" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sara Ali\",\n  \"email\": \"sara.ali@example.com\",\n  \"password\": \"secret123\",\n  \"phone\": \"+1 555 010 9999\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Creates a new CUSTOMER account. Requires `name`, `email`, `password` (min 6 chars). Returns 201 + user, or 409 if the email is taken."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Logs the user in and returns their profile + a session token. The test script below auto-saves `userId` and `token` for the rest of the collection.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "const json = pm.response.json();",
+                    "if (json && json.user) {",
+                    "  pm.collectionVariables.set('userId', json.user.id);",
+                    "  pm.collectionVariables.set('customerEmail', json.user.email);",
+                    "  pm.environment.set('token', json.token);",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Clears the session on the client. Returns `{ success: true }`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Update profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{userId}}\",\n  \"name\": \"Sara Ali\",\n  \"phone\": \"+1 555 010 8888\",\n  \"licenseNumber\": \"NY-D-112233\",\n  \"newPassword\": \"newsecret456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            },
+            "description": "Updates the logged-in user's profile. NOTE: the route reads `id` from the **body**. `newPassword` is applied only if >= 6 chars."
+          },
+          "response": []
+        },
+        {
+          "name": "My bookings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"],
+              "query": [
+                { "key": "userId", "value": "{{userId}}", "description": "Current user's id (auto-filled by Login)" },
+                { "key": "status", "value": "UPCOMING", "description": "Optional filter: PENDING_PAYMENT | UPCOMING | ACTIVE | COMPLETED | CANCELLED" }
+              ]
+            },
+            "description": "Returns all bookings for the logged-in user (newest first), each with the car and user included."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"pickupDate\": \"2026-08-20T10:00:00.000Z\",\n  \"returnDate\": \"2026-08-22T10:00:00.000Z\",\n  \"pickupLocation\": \"Times Square Hub\",\n  \"returnLocation\": \"Times Square Hub\",\n  \"extras\": [\"gps\"],\n  \"insurance\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"]
+            },
+            "description": "Creates a booking at `PENDING_PAYMENT` with computed pricing (subtotal + 8% service fee + optional insurance 12/day + extras 5-15/day). Returns 409 if the car is unavailable for the dates. Response includes `bookingCode` and `pickupOtp`."
+          },
+          "response": []
+        },
+        {
+          "name": "Get booking",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}"]
+            },
+            "description": "Returns a single booking with car and user included. 404 if not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm payment",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{bookingId}}\",\n  \"status\": \"UPCOMING\",\n  \"paymentStatus\": \"PAID\",\n  \"paymentMethod\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}"]
+            },
+            "description": "Marks the booking as paid (checkout flow). NOTE: reads `id` from the **body**."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel booking",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{bookingId}}\",\n  \"status\": \"CANCELLED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}"]
+            },
+            "description": "Cancels a booking (sets status to CANCELLED). NOTE: reads `id` from the **body**."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "My reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "Lists reviews. Add `?carId={{carId}}` to filter by car."
+          },
+          "response": []
+        },
+        {
+          "name": "Add review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"rating\": 5,\n  \"comment\": \"Great experience, smooth handover!\",\n  \"tripType\": \"leisure\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "Adds a review for a completed trip. Recomputes the car's average rating and review count."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -39,7 +39,7 @@ export function CustomerHeader() {
   ];
 
   const siteName = branding?.siteName || "RentDrive";
-  const logoUrl = branding?.logoUrl;
+  const logoUrl = branding?.logoUrl || "/logo.png";
   const logoEmoji = branding?.logoEmoji || "🚗";
 
   return (

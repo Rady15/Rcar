@@ -24,7 +24,7 @@ async function getSeo() {
           stats: "[]", howItWorks: "[]", testimonials: "[]",
           finalCta: JSON.stringify({ title: "", subtitle: "", primaryBtn: "", secondaryBtn: "", adminLabel: "" }),
           footer: JSON.stringify({ tagline: "", phone: "", email: "", address: "", copyright: "" }),
-          branding: JSON.stringify({ siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "", accentColor: "#d97706" }),
+          branding: JSON.stringify({ siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "/logo.png", accentColor: "#d97706" }),
           seo: JSON.stringify({ title: "RentDrive — Premium Car Rental Platform", description: "Rent luxury, sports, electric and family cars by the day.", keywords: "car rental, luxury cars", ogImageUrl: "", twitterHandle: "" }),
         },
       });
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: seo.title,
     description: seo.description,
     keywords: seo.keywords?.split(",").map((k: string) => k.trim()).filter(Boolean),
-    icons: { icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg" },
+    icons: { icon: "/logo.png" },
     openGraph: {
       title: seo.title, description: seo.description, type: "website",
       ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl, width: 1200, height: 630 }] } : {}),

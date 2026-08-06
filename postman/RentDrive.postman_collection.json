@@ -1,0 +1,577 @@
+{
+  "info": {
+    "name": "RentDrive API",
+    "_postman_id": "c6f7b1e0-4a2c-4f8a-9d5e-1b3a7c9d2f01",
+    "description": "Complete API collection for the RentDrive car rental platform.\n\n**Base URLs**\n- Local dev: `http://localhost:3000`\n- Production: `https://rcar-omega.vercel.app`\n\nSet the `baseUrl` collection variable to switch environments.\n\n**Auth model**: The app uses a simple session model. Login returns a `user` + `token`. The only protected endpoint is `GET /api/admin/stats`, which requires the `x-admin-email` header set to the email of a user with role `ADMIN`.\n\n**Seed accounts**\n- Admin: `admin@rentdrive.app` / `admin123`\n- Customer: `michael@example.com` / `demo123`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "adminEmail", "value": "admin@rentdrive.app" },
+    { "key": "adminPassword", "value": "admin123" },
+    { "key": "customerEmail", "value": "michael@example.com" },
+    { "key": "customerPassword", "value": "demo123" },
+    { "key": "carId", "value": "" },
+    { "key": "bookingId", "value": "" },
+    { "key": "userId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (create customer account)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"secret123\",\n  \"phone\": \"+1 555 010 1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Creates a new CUSTOMER account. `email`, `password` (min 6 chars) and `name` are required. Returns 409 if the email is already registered. The password is bcrypt-hashed."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Logs a user in. Returns the user object (incl. `role`) and a demo session `token`. Swap in `{{adminEmail}}` / `{{adminPassword}}` for the admin account.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "const json = pm.response.json();",
+                    "if (json && json.user) {",
+                    "  pm.collectionVariables.set('userId', json.user.id);",
+                    "  pm.collectionVariables.set('adminEmail', json.user.email);",
+                    "  pm.environment.set('token', json.token);",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "No-op endpoint. Returns `{ success: true }`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cars",
+      "item": [
+        {
+          "name": "List cars",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/cars?category=suv&featured=true&search=bmw&sort=price_low",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cars"],
+              "query": [
+                { "key": "category", "value": "suv", "description": "One of: all, sedan, suv, sports, luxury, electric, convertible, van" },
+                { "key": "featured", "value": "true", "description": "true filters to featured cars only" },
+                { "key": "search", "value": "bmw", "description": "Fuzzy match on brand, model, category or color" },
+                { "key": "sort", "value": "price_low", "description": "price_low | price_high | rating | recommended" }
+              ]
+            },
+            "description": "Lists cars with optional filters. `sort` defaults to `recommended` (by reviewCount desc)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create car (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"BMW\",\n  \"model\": \"M4 Competition\",\n  \"year\": 2024,\n  \"pricePerDay\": 249,\n  \"category\": \"sports\",\n  \"transmission\": \"Automatic\",\n  \"fuelType\": \"Petrol\",\n  \"seats\": 4,\n  \"doors\": 2,\n  \"features\": [\"Sport seats\", \"Harmon Kardon\", \"Heads-up display\"],\n  \"rating\": 5.0,\n  \"color\": \"Sao Paulo Yellow\",\n  \"description\": \"Twin-turbo 3.0L inline-six, 503 hp.\",\n  \"imageUrl\": \"https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=1200&q=80\",\n  \"isFeatured\": true,\n  \"isAvailable\": true,\n  \"horsePower\": 503,\n  \"topSpeed\": 290,\n  \"zeroToHundred\": 3.5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cars",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cars"]
+            },
+            "description": "Creates a car. Returns 201 with the new car. `features` is stored as a JSON string array."
+          },
+          "response": []
+        },
+        {
+          "name": "Get car by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/cars/{{carId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cars", "{{carId}}"]
+            },
+            "description": "Returns one car plus its reviews (with reviewer names). 404 if not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update car (admin) - id in body",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{carId}}\",\n  \"pricePerDay\": 199,\n  \"isAvailable\": true,\n  \"rating\": 4.8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cars/{{carId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cars", "{{carId}}"]
+            },
+            "description": "Partially updates a car. NOTE: this route reads `id` from the **body** (not the URL). Numeric fields are coerced to numbers; `features` arrays are JSON-stringified."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete car (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/cars/{{carId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cars", "{{carId}}"]
+            },
+            "description": "Deletes a car. Returns `{ success: true }`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "List bookings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings?userId={{userId}}&status=UPCOMING",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"],
+              "query": [
+                { "key": "userId", "value": "{{userId}}", "description": "Filter bookings for one user" },
+                { "key": "status", "value": "UPCOMING", "description": "PENDING_PAYMENT | UPCOMING | ACTIVE | COMPLETED | CANCELLED" }
+              ]
+            },
+            "description": "Lists bookings (newest first) with the car and user included. Admin view uses `/api/bookings` with no filters."
+          },
+          "response": []
+        },
+        {
+          "name": "Create booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"pickupDate\": \"2026-08-15T10:00:00.000Z\",\n  \"returnDate\": \"2026-08-18T10:00:00.000Z\",\n  \"pickupLocation\": \"JFK International Airport\",\n  \"returnLocation\": \"JFK International Airport\",\n  \"extras\": [\"gps\", \"additional_driver\"],\n  \"insurance\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"]
+            },
+            "description": "Creates a booking at status `PENDING_PAYMENT`. Pricing: `subtotal = pricePerDay * days + extras * days`, `serviceFee = subtotal * 8%`, `insurance = 12 * days`. Returns 409 if the car is already booked for the range. Includes a `bookingCode` and `pickupOtp`."
+          },
+          "response": []
+        },
+        {
+          "name": "Get booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}"]
+            },
+            "description": "Returns one booking with car and user included. 404 if not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update booking status - id in body",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{bookingId}}\",\n  \"status\": \"UPCOMING\",\n  \"paymentStatus\": \"PAID\",\n  \"paymentMethod\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}"]
+            },
+            "description": "Updates booking fields. NOTE: reads `id` from the **body**. Used by the checkout flow to confirm payment and by the admin panel to move statuses (PENDING_PAYMENT → UPCOMING → ACTIVE → COMPLETED, or CANCELLED)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete booking",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}"]
+            },
+            "description": "Deletes a booking. Returns `{ success: true }`."
+          },
+          "response": []
+        },
+        {
+          "name": "Auto-update booking statuses (cron)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/auto-update",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "auto-update"]
+            },
+            "description": "Housekeeping job: UPCOMING → ACTIVE once pickupDate has passed, ACTIVE → COMPLETED once returnDate has passed. Returns `{ success, updated, checked }`. Intended to be called by a cron/scheduler."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List users (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/users?role=CUSTOMER",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"],
+              "query": [
+                { "key": "role", "value": "CUSTOMER", "description": "Filter by role: CUSTOMER | ADMIN. Omitting returns all users." }
+              ]
+            },
+            "description": "Lists users with booking/review counts and `totalSpent` (sum of PAID bookings) for customers."
+          },
+          "response": []
+        },
+        {
+          "name": "Update user - id in body",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{userId}}\",\n  \"name\": \"John Doe\",\n  \"phone\": \"+1 555 010 4321\",\n  \"licenseNumber\": \"NY-D-998877\",\n  \"newPassword\": \"newsecret123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            },
+            "description": "Partially updates a user profile. NOTE: reads `id` from the **body**. `newPassword` only applied if >= 6 chars (stored as plaintext — legacy behavior)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "List reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews?carId={{carId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"],
+              "query": [
+                { "key": "carId", "value": "{{carId}}", "description": "Filter reviews to one car. Omitting returns all reviews." }
+              ]
+            },
+            "description": "Lists reviews (newest first) with reviewer name and car info."
+          },
+          "response": []
+        },
+        {
+          "name": "Create review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"rating\": 5,\n  \"comment\": \"Smooth pickup and an amazing drive!\",\n  \"tripType\": \"business\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "Creates a review and recomputes the car's average rating + reviewCount."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete review",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews?id=review_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"],
+              "query": [{ "key": "id", "value": "review_id_here", "description": "Review id passed as a query param" }]
+            },
+            "description": "Deletes a review by id (query param). Returns `{ success: true }`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Deals",
+      "item": [
+        {
+          "name": "List deals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/deals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Lists active deals only, with their linked car, sorted by end date ascending."
+          },
+          "response": []
+        },
+        {
+          "name": "Create deal (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Summer Weekend Escape\",\n  \"description\": \"20% off on weekend rentals.\",\n  \"discountLabel\": \"20% OFF\",\n  \"discountPercent\": 20,\n  \"carId\": \"{{carId}}\",\n  \"promoCode\": \"SUMMER20\",\n  \"endDate\": \"2026-09-01T00:00:00.000Z\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/deals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Creates a deal. `carId` is optional; `isActive` defaults to true."
+          },
+          "response": []
+        },
+        {
+          "name": "Update deal (admin) - id in body",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"deal_id_here\",\n  \"discountPercent\": 25,\n  \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/deals/deal_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "deals", "deal_id_here"]
+            },
+            "description": "Partially updates a deal. NOTE: reads `id` from the **body**. `endDate` is parsed to a Date; `isActive` coerced to boolean."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete deal (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/deals?id=deal_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "deals"],
+              "query": [{ "key": "id", "value": "deal_id_here", "description": "Deal id passed as a query param" }]
+            },
+            "description": "Deletes a deal by id (query param). Returns `{ success: true }`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
+            },
+            "description": "Lists active categories sorted by `sortOrder`. Falls back to hardcoded defaults (sedan, suv, sports, luxury, electric, convertible, van) when the table is empty."
+          },
+          "response": []
+        },
+        {
+          "name": "Create category (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mini Van\",\n  \"nameAr\": \"فان صغير\",\n  \"slug\": \"mini-van\",\n  \"imageUrl\": \"https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80\",\n  \"description\": \"Compact family vans\",\n  \"sortOrder\": 8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
+            },
+            "description": "Creates a category. `slug` and `nameAr` default to a slugified version of `name`."
+          },
+          "response": []
+        },
+        {
+          "name": "Update category (admin) - id in body",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"category_id_here\",\n  \"name\": \"Minivan\",\n  \"sortOrder\": 9\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categories/category_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", "category_id_here"]
+            },
+            "description": "Partially updates a category. NOTE: reads `id` from the **body**."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete category (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories?id=category_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"],
+              "query": [{ "key": "id", "value": "category_id_here", "description": "Category id passed as a query param" }]
+            },
+            "description": "Deletes a category by id (query param). Returns `{ success: true }`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Site Content",
+      "item": [
+        {
+          "name": "Get site content",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/site-content",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "site-content"]
+            },
+            "description": "Returns the singleton site content (hero, stats, howItWorks, testimonials, finalCta, footer, branding, seo) parsed from JSON. Auto-creates defaults on first call."
+          },
+          "response": []
+        },
+        {
+          "name": "Update site content (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hero\": {\n    \"badge\": \"18+ cars available right now\",\n    \"title\": \"Drive your\",\n    \"highlightedWord\": \"dream car,\",\n    \"italicWord\": \"today.\",\n    \"subtitle\": \"Book in under 60 seconds with free cancellation up to 24h before pickup.\",\n    \"primaryBtn\": \"Browse cars\",\n    \"secondaryBtn\": \"View deals\",\n    \"imageUrl\": \"https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80\",\n    \"scrollHint\": \"Scroll to explore\",\n    \"showBadges\": true,\n    \"signInLabel\": \"Already a member?\",\n    \"adminLabel\": \"Admin panel\"\n  },\n  \"footer\": {\n    \"tagline\": \"Premium car rentals, on demand.\",\n    \"phone\": \"+1 (555) 010-2024\",\n    \"email\": \"support@rentdrive.app\",\n    \"address\": \"350 5th Ave, New York\",\n    \"copyright\": \"© 2026 RentDrive Inc. All rights reserved.\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/site-content",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "site-content"]
+            },
+            "description": "Upserts the site content singleton. Any subset of the 8 sections (hero, stats, howItWorks, testimonials, finalCta, footer, branding, seo) may be sent; objects are JSON-stringified for storage."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get dashboard stats (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-admin-email", "value": "{{adminEmail}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "stats"]
+            },
+            "description": "Dashboard aggregates: counts (cars/bookings/customers/reviews/deals), totalRevenue (sum of PAID), statusBreakdown, carsByCategory, recentBookings (5), topCars (5), revenueByDay (last 7 days).\n\n**Auth**: requires the `x-admin-email` header to match a user with role `ADMIN`. In production a missing/invalid header returns 401. In local dev (`NODE_ENV !== production`) the check is skipped."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

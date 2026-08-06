@@ -8,7 +8,7 @@ const DEFAULTS = {
   testimonials: [{ name: "Michael Chen", role: "Verified Renter", rating: 5, text: "Amazing service.", initials: "MC" }],
   finalCta: { title: "Ready to hit the road?", subtitle: "Join thousands of happy renters.", primaryBtn: "Get started", secondaryBtn: "Browse cars", adminLabel: "Admin?" },
   footer: { tagline: "Premium car rentals, on demand.", phone: "+1 (555) 010-2024", email: "support@rentdrive.app", address: "350 5th Ave, New York", copyright: "© 2024 RentDrive Inc. All rights reserved." },
-  branding: { siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "", accentColor: "#d97706" },
+  branding: { siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "/logo.png", accentColor: "#d97706" },
   seo: { title: "RentDrive — Premium Car Rental Platform", description: "Rent luxury, sports, electric and family cars by the day.", keywords: "car rental, luxury cars", ogImageUrl: "", twitterHandle: "@rentdrive" },
 };
 

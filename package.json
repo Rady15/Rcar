@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 2>&1",
-    "build": "next build && node -e \"const fs=require('fs'),path=require('path');function c(s,d){fs.mkdirSync(d,{recursive:true});for(const e of fs.readdirSync(s)){const a=path.join(s,e),b=path.join(d,e);fs.statSync(a).isDirectory()?c(a,b):fs.copyFileSync(a,b)}}c('.next/static','.next/standalone/.next/static');c('public','.next/standalone/public')\"",
+    "build": "next build",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 ",
     "lint": "eslint .",
     "db:push": "prisma db push --accept-data-loss",

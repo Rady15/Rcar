@@ -350,7 +350,7 @@ export const t = {
   login_welcome: { ar: "مرحبًا بعودتك", en: "Welcome back" },
   login_create: { ar: "أنشئ حسابك", en: "Create your account" },
   login_signin_desc: { ar: "سجّل الدخول لإدارة حجوزاتك", en: "Sign in to manage your bookings" },
-  login_signup_desc: { ar: "انضم إلى يلو وابدأ مغامرتك القادمة اليوم", en: "Join Yelo and start your next adventure today" },
+  login_signup_desc: { ar: "انضم إلى كارلك وابدأ مغامرتك القادمة اليوم", en: "Join Carlk and start your next adventure today" },
   login_email: { ar: "البريد الإلكتروني", en: "Email address" },
   login_password: { ar: "كلمة المرور", en: "Password" },
   login_full_name: { ar: "الاسم الكامل", en: "Full name" },

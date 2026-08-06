@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { tr } from "@/lib/i18n";
 import {
-  Menu, X, ChevronDown, Heart, Search, User, LogIn, Globe, Car,
+  Menu, X, ChevronDown, Heart, Search, User, LogIn, Globe,
 } from "lucide-react";
 import { useScrollToSection, useIsScrolled } from "@/components/shared/motion-primitives";
 import { cn } from "@/lib/utils";
@@ -47,23 +47,12 @@ export function YeloNavbar() {
             onClick={() => { setCustomerView("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
             className="flex items-center gap-2 group"
           >
-            <div className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-xl transition-all",
-              scrolled ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground"
-            )}>
-              <Car className="h-5 w-5" />
-            </div>
+            <img src="/logo.png" alt="Carlk" className="h-10 w-10 rounded-xl object-cover transition-all" />
             <span className={cn(
               "text-xl font-extrabold tracking-tight transition-colors",
               scrolled ? "text-foreground" : "text-white"
             )}>
-              {lang === "ar" ? "يلو" : "Yelo"}
-            </span>
-            <span className={cn(
-              "text-sm font-medium hidden sm:inline transition-colors",
-              scrolled ? "text-muted-foreground" : "text-white/80"
-            )}>
-              {lang === "ar" ? "Yelo" : "يلو"}
+              {lang === "ar" ? "كارلك" : "Carlk"}
             </span>
           </button>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAppStore } from "@/lib/store";
 import { api, formatCurrency, formatDate } from "@/lib/helpers";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,12 @@ interface Stats {
 export function DashboardView() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  useEffect(() => { api<Stats>("/api/admin/stats").then(setStats).finally(() => setLoading(false)); }, []);
+  const { user } = useAppStore();
+  useEffect(() => {
+    api<Stats>("/api/admin/stats", { headers: user ? { "x-admin-email": user.email } : {} })
+      .then(setStats)
+      .finally(() => setLoading(false));
+  }, [user?.email]);
 
   if (loading || !stats) {
     return <div className="p-6 space-y-6"><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-28 rounded-xl" />)}</div><Skeleton className="h-72 rounded-xl" /></div>;

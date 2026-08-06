@@ -38,7 +38,7 @@ export function CustomerFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-base">🚗</div>
+              <img src="/logo.png" alt="RentDrive" className="h-8 w-8 rounded-lg object-cover" />
               <span className="text-base font-bold">{isRtl ? "يلو" : "Yelo"}</span>
             </div>
             <p className="text-sm text-muted-foreground">{isRtl ? tr("footer_tagline", lang) : footer.tagline}</p>

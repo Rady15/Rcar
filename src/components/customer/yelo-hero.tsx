@@ -95,6 +95,14 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
           : "relative z-10 flex-1 flex items-start justify-start px-6 md:px-16 pt-28 md:pt-36"}
       >
         <div className={isRtl ? "max-w-2xl text-right" : "max-w-2xl text-left"}>
+          <motion.img
+            src="/logo.png"
+            alt="RentDrive"
+            initial={reduce ? false : { opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="h-14 w-14 md:h-16 md:w-16 rounded-2xl object-cover shadow-2xl mb-5"
+          />
           <motion.h1
             initial={reduce ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

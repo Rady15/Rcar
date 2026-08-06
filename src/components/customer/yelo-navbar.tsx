@@ -47,7 +47,7 @@ export function YeloNavbar() {
             onClick={() => { setCustomerView("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
             className="flex items-center gap-2 group"
           >
-            <img src="/logo.png" alt="Carlk" className="h-10 w-10 rounded-xl object-cover transition-all" />
+            <img src="/logo.png" alt="Carlk" className="h-10 w-10 rounded-xl bg-white p-1 object-contain transition-all" />
             <span className={cn(
               "text-xl font-extrabold tracking-tight transition-colors",
               scrolled ? "text-foreground" : "text-white"

@@ -101,7 +101,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
             initial={reduce ? false : { opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="h-14 w-14 md:h-16 md:w-16 rounded-2xl object-cover shadow-2xl mb-5"
+            className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-white p-1.5 object-contain shadow-2xl mb-5"
           />
           <motion.h1
             initial={reduce ? false : { opacity: 0, y: 20 }}

@@ -15,10 +15,10 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ deal });
 }
 
-export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const existing = await db.deal.findUnique({ where: { id } });
+  if (!existing) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
   await db.deal.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }

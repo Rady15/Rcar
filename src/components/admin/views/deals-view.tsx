@@ -56,7 +56,7 @@ export function DealsAdminView() {
                 {deal.car && <div className="flex items-center gap-2 pt-2"><img src={deal.car.imageUrl} alt="" className="w-12 h-9 rounded object-cover" /><span className="text-sm">{deal.car.brand} {deal.car.model}</span></div>}
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                   <div><p className="text-xs text-muted-foreground">Promo code</p><code className="font-mono font-bold text-primary">{deal.promoCode}</code></div>
-                  <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete this deal?")) { api(`/api/deals?id=${deal.id}`, { method: "DELETE" }).then(() => { toast.success("Deal deleted"); load(); }).catch(() => toast.error("Delete failed")); } }}><Trash2 className="h-4 w-4 text-red-600" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => { if (confirm("Delete this deal?")) { api(`/api/deals/${deal.id}`, { method: "DELETE" }).then(() => { toast.success("Deal deleted"); load(); }).catch(() => toast.error("Delete failed")); } }}><Trash2 className="h-4 w-4 text-red-600" /></Button>
                 </div>
               </div>
             </Card>

@@ -13,10 +13,8 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ category });
 }
 
-export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const existing = await db.category.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Category not found" }, { status: 404 });
   await db.category.delete({ where: { id } });

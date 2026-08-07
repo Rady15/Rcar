@@ -2,7 +2,7 @@
   "info": {
     "name": "RentDrive API",
     "_postman_id": "c6f7b1e0-4a2c-4f8a-9d5e-1b3a7c9d2f01",
-    "description": "Complete API collection for the RentDrive car rental platform.\n\n**Base URLs**\n- Local dev: `http://localhost:3000`\n- Production: `https://rcar-omega.vercel.app`\n\nSet the `baseUrl` collection variable to switch environments.\n\n**Auth model**: The app uses a simple session model. Login returns a `user` + `token`. The only protected endpoint is `GET /api/admin/stats`, which requires the `x-admin-email` header set to the email of a user with role `ADMIN`.\n\n**Seed accounts**\n- Admin: `admin@rentdrive.app` / `admin123`\n- Customer: `michael@example.com` / `demo123`",
+    "description": "Complete API collection for the RentDrive car rental platform.\n\n**Base URLs**\n- Local dev: `http://localhost:3000`\n- Production: `https://rcar-omega.vercel.app`\n\nSet the `baseUrl` collection variable to switch environments.\n\n**Auth model**: The app uses a simple session model. Login returns a `user` + `token`. The only protected endpoint is `GET /api/admin/stats`, which requires the `x-admin-email` header set to the email of a user with role `ADMIN`.\n\n**Request bodies**: All mutating endpoints (POST/PATCH/PUT) parse a JSON body. A missing/empty or malformed body returns `400 {"error": "Invalid JSON body"}`. Login additionally returns `400 {"error": "Email and password are required"}` if either field is absent.\n\n**Seed accounts**\n- Admin: `admin@rentdrive.app` / `admin123`\n- Customer: `michael@example.com` / `demo123`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -33,7 +33,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "register"]
             },
-            "description": "Creates a new CUSTOMER account. `email`, `password` (min 6 chars) and `name` are required. Returns 409 if the email is already registered. The password is bcrypt-hashed."
+            "description": "Creates a new CUSTOMER account. `email`, `password` (min 6 chars) and `name` are required. Returns 409 if the email is already registered, or 400 if the JSON body is missing/malformed. The password is bcrypt-hashed."
           },
           "response": []
         },
@@ -51,7 +51,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "login"]
             },
-            "description": "Logs a user in. Returns the user object (incl. `role`) and a demo session `token`. Swap in `{{adminEmail}}` / `{{adminPassword}}` for the admin account.",
+            "description": "Logs a user in. Returns the user object (incl. `role`) and a demo session `token`. Swap in `{{adminEmail}}` / `{{adminPassword}}` for the admin account. Returns `400` if `email` or `password` is missing or the JSON body is malformed.",
             "event": [
               {
                 "listen": "test",

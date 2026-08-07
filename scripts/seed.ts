@@ -48,6 +48,16 @@ const BOOKINGS = [
   { id: "b6", userId: "u2", carId: "c5", pickupDate: new Date(Date.now() - 60 * 86400000), returnDate: new Date(Date.now() - 53 * 86400000), pickupLocation: "New York Downtown", returnLocation: "New York Downtown", daysCount: 7, pricePerDay: 145, subtotal: 1015, insuranceFee: 84, serviceFee: 87.92, total: 1186.92, status: "COMPLETED", bookingCode: "RD100006", extras: '["child_seat","additional_driver"]', paymentMethod: "card", paymentStatus: "PAID" },
 ];
 
+const CATEGORIES = [
+  { id: "sedan", name: "Sedan", nameAr: "سيدان", slug: "sedan", imageUrl: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=600&q=80", sortOrder: 1 },
+  { id: "suv", name: "SUV", nameAr: "دفع رباعي", slug: "suv", imageUrl: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80", sortOrder: 2 },
+  { id: "sports", name: "Sports", nameAr: "رياضية", slug: "sports", imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80", sortOrder: 3 },
+  { id: "luxury", name: "Luxury", nameAr: "فاخرة", slug: "luxury", imageUrl: "https://images.unsplash.com/photo-1617788138017-80ad40656699?auto=format&fit=crop&w=600&q=80", sortOrder: 4 },
+  { id: "electric", name: "Electric", nameAr: "كهربائية", slug: "electric", imageUrl: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=600&q=80", sortOrder: 5 },
+  { id: "convertible", name: "Convertible", nameAr: "كشف", slug: "convertible", imageUrl: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=600&q=80", sortOrder: 6 },
+  { id: "van", name: "Van", nameAr: "فان", slug: "van", imageUrl: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80", sortOrder: 7 },
+];
+
 const HERO = { badge: "18+ cars available right now", title: "Drive your", highlightedWord: "dream car,", italicWord: "today.", subtitle: "From fuel-sipping hybrids to roaring supercars. Book in under 60 seconds with free cancellation up to 24h before pickup.", primaryBtn: "Browse cars", secondaryBtn: "View deals", imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80", scrollHint: "Scroll to explore", showBadges: true, signInLabel: "Already a member?", adminLabel: "Admin panel" };
 const STATS = [
   { icon: "car", value: "18+", label: "Premium cars" },
@@ -68,7 +78,7 @@ const TESTIMONIALS = [
 ];
 const FINAL_CTA = { title: "Ready to hit the road?", subtitle: "Join thousands of happy renters. Sign up in 30 seconds and book your first car today.", primaryBtn: "Get started", secondaryBtn: "Browse cars", adminLabel: "Admin?" };
 const FOOTER = { tagline: "Premium car rentals, on demand. From economy hybrids to supercars, find your perfect ride.", phone: "+1 (555) 010-2024", email: "support@rentdrive.app", address: "350 5th Ave, New York", copyright: "© 2024 RentDrive Inc. All rights reserved." };
-const BRANDING = { siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "", accentColor: "#d97706" };
+const BRANDING = { siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "/logo.png", accentColor: "#d97706" };
 const SEO = { title: "RentDrive — Premium Car Rental Platform", description: "Rent luxury, sports, electric and family cars by the day. Full customer booking platform + admin panel.", keywords: "car rental, luxury cars, sports cars, electric cars, NYC car rental, rent a car", ogImageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80", twitterHandle: "@rentdrive" };
 
 async function main() {
@@ -92,6 +102,9 @@ async function main() {
 
   for (const d of DEALS) await db.deal.upsert({ where: { id: d.id }, update: {}, create: d });
   console.log(`Seeded ${DEALS.length} deals`);
+
+  for (const c of CATEGORIES) await db.category.upsert({ where: { id: c.id }, update: c, create: c });
+  console.log(`Seeded ${CATEGORIES.length} categories`);
 
   for (const r of REVIEWS) {
     const existing = await db.review.findFirst({ where: { userId: r.userId, carId: r.carId } });

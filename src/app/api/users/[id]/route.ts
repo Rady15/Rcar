@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getJsonBody } from "@/lib/request";
 
 const USER_SELECT = {
   id: true, email: true, name: true, phone: true, role: true, isSuspended: true,
@@ -7,7 +8,8 @@ const USER_SELECT = {
 } as const;
 
 export async function PATCH(req: NextRequest) {
-  const body = await req.json();
+  const body = await getJsonBody(req);
+  if (!body) return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   const { id, name, phone, licenseNumber } = body;
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
   const existing = await db.user.findUnique({ where: { id } });

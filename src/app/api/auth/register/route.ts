@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
+import { getJsonBody } from "@/lib/request";
 
 export async function POST(req: NextRequest) {
-  const { email, password, name, phone } = await req.json();
+  const body = await getJsonBody(req);
+  if (!body) return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  const { email, password, name, phone } = body;
   if (!email || !password || !name) {
     return NextResponse.json({ error: "Email, password, and name are required" }, { status: 400 });
   }

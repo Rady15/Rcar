@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getJsonBody } from "@/lib/request";
 
 const DEFAULTS = {
   hero: { badge: "18+ cars available right now", title: "Drive your", highlightedWord: "dream car,", italicWord: "today.", subtitle: "From fuel-sipping hybrids to roaring supercars. Book in under 60 seconds with free cancellation up to 24h before pickup.", primaryBtn: "Browse cars", secondaryBtn: "View deals", imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80", scrollHint: "Scroll to explore", showBadges: true, signInLabel: "Already a member?", adminLabel: "Admin panel" },
@@ -48,7 +49,8 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  const body = await req.json();
+  const body = await getJsonBody(req);
+  if (!body) return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   const cleaned: Record<string, string> = {};
   for (const key of ["hero", "stats", "howItWorks", "testimonials", "finalCta", "footer", "branding", "seo"]) {
     if (body[key] !== undefined) {

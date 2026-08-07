@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getJsonBody } from "@/lib/request";
 
 export async function PATCH(req: NextRequest) {
-  const body = await req.json();
+  const body = await getJsonBody(req);
+  if (!body) return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   const { id, ...update } = body;
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
   const cleaned: Record<string, unknown> = { ...update };

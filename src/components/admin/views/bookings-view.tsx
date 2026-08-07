@@ -6,11 +6,12 @@ import { Booking } from "@/lib/types";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Search, CalendarCheck, KeyRound, CreditCard } from "lucide-react";
+import { Search, CalendarCheck, KeyRound, CreditCard, Trash2 } from "lucide-react";
 
 const STATUS_OPTIONS = ["PENDING_PAYMENT", "UPCOMING", "ACTIVE", "PICKED_UP", "RETURNED", "INSPECTED", "COMPLETED", "CANCELLED"];
 
@@ -53,6 +54,12 @@ export function BookingsView() {
     catch { toast.error("Update failed"); }
   };
 
+  const remove = async (b: Booking) => {
+    if (!confirm(`Delete booking ${b.bookingCode}? This cannot be undone.`)) return;
+    try { await api(`/api/bookings/${b.id}`, { method: "DELETE" }); toast.success(`Booking ${b.bookingCode} deleted`); load(); }
+    catch { toast.error("Delete failed"); }
+  };
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div><h1 className="text-2xl font-bold tracking-tight">Bookings</h1><p className="text-sm text-muted-foreground">{bookings.length} total bookings</p></div>
@@ -87,10 +94,13 @@ export function BookingsView() {
                       <TableCell><Badge className={STATUS_BADGE[b.status]} variant="secondary">{b.status.replace(/_/g, " ")}</Badge></TableCell>
                       <TableCell>{bAny.pickupOtp ? <span className="flex items-center gap-1 text-xs font-mono font-bold text-primary"><KeyRound className="h-3 w-3" />{bAny.pickupOtp}</span> : <span className="text-xs text-muted-foreground">—</span>}</TableCell>
                       <TableCell>
-                        <Select value={b.status} onValueChange={(v) => updateStatus(b.id, v)}>
-                          <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>)}</SelectContent>
-                        </Select>
+                        <div className="flex items-center gap-1">
+                          <Select value={b.status} onValueChange={(v) => updateStatus(b.id, v)}>
+                            <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>)}</SelectContent>
+                          </Select>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-red-50" onClick={() => remove(b)} title="Delete booking" aria-label="Delete booking"><Trash2 className="h-4 w-4 text-red-600" /></Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );

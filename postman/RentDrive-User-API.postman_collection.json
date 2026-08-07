@@ -50,7 +50,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "login"]
             },
-            "description": "Logs the user in and returns their profile + a session token. The test script below auto-saves `userId` and `token` for the rest of the collection.",
+            "description": "Logs the user in and returns their profile + a session token. Returns `403 Account suspended` if the account was suspended by an admin. The test script below auto-saves `userId` and `token` for the rest of the collection.",
             "event": [
               {
                 "listen": "test",

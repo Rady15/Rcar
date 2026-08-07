@@ -295,7 +295,7 @@
                 { "key": "role", "value": "CUSTOMER", "description": "Filter by role: CUSTOMER | ADMIN. Omitting returns all users." }
               ]
             },
-            "description": "Lists users with booking/review counts and `totalSpent` (sum of PAID bookings) for customers."
+            "description": "Lists users with booking/review counts and `totalSpent` (sum of PAID bookings) for customers. Each user includes `isSuspended` (admins can suspend via PATCH or delete via DELETE `/api/users/:id`)."
           },
           "response": []
         },
@@ -314,6 +314,38 @@
               "path": ["api", "users", "{{userId}}"]
             },
             "description": "Partially updates a user profile. NOTE: reads `id` from the **body**. `newPassword` only applied if >= 6 chars (stored as plaintext — legacy behavior)."
+          },
+          "response": []
+        },
+        {
+          "name": "Suspend / re-activate customer (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{userId}}\",\n  \"isSuspended\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            },
+            "description": "Suspends (`isSuspended: true`) or re-activates (`isSuspended: false`) a customer. Suspended accounts get `403 Account suspended` on login. NOTE: reads `id` from the **body**."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete customer (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            },
+            "description": "Permanently deletes a customer. Their bookings and reviews are deleted too (DB cascade). Returns `{ success: true }`. Admin accounts cannot be deleted."
           },
           "response": []
         }

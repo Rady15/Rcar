@@ -10,7 +10,7 @@ export interface Car {
 
 export interface User {
   id: string; email: string; name: string; phone?: string | null;
-  role: string; createdAt: string;
+  role: string; isSuspended?: boolean; createdAt: string;
   _count?: { bookings: number; reviews: number };
   totalSpent?: number;
 }

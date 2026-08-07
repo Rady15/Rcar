@@ -15,6 +15,7 @@ model User {
   phone          String?
   password       String
   role           String   @default("CUSTOMER") // CUSTOMER | ADMIN
+  isSuspended    Boolean  @default(false)
   avatarUrl      String?
   licenseNumber  String?
   loyaltyPoints  Int      @default(120)

@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const role = searchParams.get("role");
   const users = await db.user.findMany({
     where: role ? { role } : {},
-    select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true, _count: { select: { bookings: true, reviews: true } } },
+    select: { id: true, email: true, name: true, phone: true, role: true, isSuspended: true, createdAt: true, _count: { select: { bookings: true, reviews: true } } },
     orderBy: { createdAt: "desc" },
   });
   const usersWithStats = await Promise.all(users.map(async (u) => {

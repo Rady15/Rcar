@@ -2,12 +2,13 @@
 
 import { useAppStore, AdminView } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Car, CalendarCheck, Users, Star, Tag, Settings, LogOut, ArrowLeft, FileText, FolderTree } from "lucide-react";
+import { LayoutDashboard, Car, CalendarCheck, Users, Star, Tag, Settings, LogOut, ArrowLeft, FileText, FolderTree, MapPin } from "lucide-react";
 
 const NAV: { view: AdminView; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { view: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { view: "cars", label: "Cars", icon: Car },
   { view: "categories", label: "Categories", icon: FolderTree },
+  { view: "locations", label: "Locations", icon: MapPin },
   { view: "bookings", label: "Bookings", icon: CalendarCheck },
   { view: "customers", label: "Customers", icon: Users },
   { view: "reviews", label: "Reviews", icon: Star },

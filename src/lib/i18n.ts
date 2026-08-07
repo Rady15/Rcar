@@ -159,7 +159,7 @@ export const t = {
   section_featured_desc: { ar: "مختارة بعناية، منظفة حديثاً، جاهزة للقيادة.", en: "Hand-selected, freshly detailed, ready to drive." },
   section_featured_badge: { ar: "اختيارات المحرر", en: "Editor's picks" },
   section_popular_title: { ar: "الأكثر شعبية الآن", en: "Popular right now" },
-  section_popular_desc: { ar: "السيارات اللي ما يقدرش النيويوركيين يبطلوا حجزها.", en: "The cars New Yorkers can't stop booking." },
+  section_popular_desc: { ar: "السيارات اللي ما يقدرش السعوديين يبطلوا حجزها.", en: "The cars Saudis can't stop booking." },
   section_popular_badge: { ar: "رائج الآن", en: "Trending now" },
   section_budget_title: { ar: "عروض اقتصادية أقل من $100/يوم", en: "Budget picks under $100/day" },
   section_budget_desc: { ar: "قيمة كبيرة، سعر صغير. مثالية للتنقل اليومي ورحلات نهاية الأسبوع.", en: "Big value, small price tag. Perfect for daily commutes and weekend getaways." },
@@ -173,8 +173,8 @@ export const t = {
   section_testimonials_title_1: { ar: "محبوب من", en: "Loved by" },
   section_testimonials_title_2: { ar: "آلاف", en: "thousands" },
   section_testimonials_desc: {
-    ar: "حرّكنا أكثر من 6,400 مستأجر في نيويورك. ده اللي قالوه بعضهم.",
-    en: "We've moved 6,400+ renters across NYC. Here's what a few of them had to say.",
+    ar: "حرّكنا أكثر من 6,400 مستأجر في المملكة. ده اللي قالوه بعضهم.",
+    en: "We've moved 6,400+ renters across Saudi Arabia. Here's what a few of them had to say.",
   },
   section_cta_title: { ar: "جاهز للانطلاق؟", en: "Ready to hit the road?" },
   section_cta_desc: {

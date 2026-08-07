@@ -12,6 +12,7 @@ import { DealsAdminView } from "./views/deals-view";
 import { SettingsView } from "./views/settings-view";
 import { ContentView } from "./views/content-view";
 import { CategoriesView } from "./views/categories-view";
+import { LocationsView } from "./views/locations-view";
 import { AdminLogin } from "./admin-login";
 
 export function AdminApp() {
@@ -31,6 +32,7 @@ export function AdminApp() {
           {adminView === "deals" && <DealsAdminView />}
           {adminView === "content" && <ContentView />}
           {adminView === "categories" && <CategoriesView />}
+          {adminView === "locations" && <LocationsView />}
           {adminView === "settings" && <SettingsView />}
         </main>
       </div>

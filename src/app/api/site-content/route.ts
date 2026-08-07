@@ -8,7 +8,7 @@ const DEFAULTS = {
   howItWorks: [{ step: "01", title: "Pick your car", desc: "Browse 18+ hand-picked cars.", icon: "search" }, { step: "02", title: "Choose dates & extras", desc: "Select pickup and return dates.", icon: "calendar" }, { step: "03", title: "Pay securely", desc: "Lock in your booking.", icon: "shield" }, { step: "04", title: "Hit the road", desc: "Show your license and drive.", icon: "zap" }],
   testimonials: [{ name: "Michael Chen", role: "Verified Renter", rating: 5, text: "Amazing service.", initials: "MC" }],
   finalCta: { title: "Ready to hit the road?", subtitle: "Join thousands of happy renters.", primaryBtn: "Get started", secondaryBtn: "Browse cars", adminLabel: "Admin?" },
-  footer: { tagline: "Premium car rentals, on demand.", phone: "+1 (555) 010-2024", email: "support@rentdrive.app", address: "350 5th Ave, New York", copyright: "© 2024 RentDrive Inc. All rights reserved." },
+  footer: { tagline: "Premium car rentals, on demand.", phone: "+966 11 234 5678", email: "support@rentdrive.sa", address: "King Fahd Road, Riyadh, Saudi Arabia", copyright: "© 2024 RentDrive Saudi. All rights reserved." },
   branding: { siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "/logo.png", accentColor: "#d97706" },
   seo: { title: "RentDrive — Premium Car Rental Platform", description: "Rent luxury, sports, electric and family cars by the day.", keywords: "car rental, luxury cars", ogImageUrl: "", twitterHandle: "@rentdrive" },
 };

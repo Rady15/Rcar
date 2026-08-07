@@ -205,7 +205,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"pickupDate\": \"2026-08-15T10:00:00.000Z\",\n  \"returnDate\": \"2026-08-18T10:00:00.000Z\",\n  \"pickupLocation\": \"JFK International Airport\",\n  \"returnLocation\": \"JFK International Airport\",\n  \"extras\": [\"gps\", \"additional_driver\"],\n  \"insurance\": true\n}"
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"pickupDate\": \"2026-08-15T10:00:00.000Z\",\n  \"returnDate\": \"2026-08-18T10:00:00.000Z\",\n  \"pickupLocation\": \"Riyadh\",\n  \"returnLocation\": \"Riyadh\",\n  \"extras\": [\"gps\", \"additional_driver\"],\n  \"insurance\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/bookings",
@@ -535,12 +535,80 @@
             "method": "DELETE",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{baseUrl}}/api/categories?id=category_id_here",
+              "raw": "{{baseUrl}}/api/categories/category_id_here",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "categories"],
-              "query": [{ "key": "id", "value": "category_id_here", "description": "Category id passed as a query param" }]
+              "path": ["api", "categories", "category_id_here"]
             },
-            "description": "Deletes a category by id (query param). Returns `{ success: true }`, or `404 Category not found` if the id doesn't exist."
+            "description": "Deletes a category by **path id**. Returns `{ success: true }`, or `404 Category not found` if the id doesn't exist."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "item": [
+        {
+          "name": "List locations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations"]
+            },
+            "description": "Lists active Saudi pickup/drop-off cities sorted by `sortOrder`. 8 defaults (Riyadh, Jeddah, Dammam, Al Khobar, Makkah, Madinah, Tabuk, Abha) are seeded. The API falls back to hardcoded defaults when the table is empty."
+          },
+          "response": []
+        },
+        {
+          "name": "Create location (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Al Ula\",\n  \"nameAr\": \"العلا\",\n  \"sortOrder\": 9\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations"]
+            },
+            "description": "Creates a city location. `nameAr` defaults to `name` if omitted; `isActive` defaults to true."
+          },
+          "response": []
+        },
+        {
+          "name": "Update location (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"AlUla\",\n  \"nameAr\": \"العلا\",\n  \"sortOrder\": 10,\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/locations/al_ula_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations", "al_ula_id_here"]
+            },
+            "description": "Partially updates a location by path id. Returns `404 Location not found` if the id doesn't exist. Use `riyadh` to edit a seeded default."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete location (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/locations/al_ula_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations", "al_ula_id_here"]
+            },
+            "description": "Deletes a location by path id. Returns `{ success: true }`, or `404 Location not found` if the id doesn't exist."
           },
           "response": []
         }
@@ -570,7 +638,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"hero\": {\n    \"badge\": \"18+ cars available right now\",\n    \"title\": \"Drive your\",\n    \"highlightedWord\": \"dream car,\",\n    \"italicWord\": \"today.\",\n    \"subtitle\": \"Book in under 60 seconds with free cancellation up to 24h before pickup.\",\n    \"primaryBtn\": \"Browse cars\",\n    \"secondaryBtn\": \"View deals\",\n    \"imageUrl\": \"https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80\",\n    \"scrollHint\": \"Scroll to explore\",\n    \"showBadges\": true,\n    \"signInLabel\": \"Already a member?\",\n    \"adminLabel\": \"Admin panel\"\n  },\n  \"footer\": {\n    \"tagline\": \"Premium car rentals, on demand.\",\n    \"phone\": \"+1 (555) 010-2024\",\n    \"email\": \"support@rentdrive.app\",\n    \"address\": \"350 5th Ave, New York\",\n    \"copyright\": \"© 2026 RentDrive Inc. All rights reserved.\"\n  }\n}"
+              "raw": "{\n  \"hero\": {\n    \"badge\": \"18+ cars available right now\",\n    \"title\": \"Drive your\",\n    \"highlightedWord\": \"dream car,\",\n    \"italicWord\": \"today.\",\n    \"subtitle\": \"Book in under 60 seconds with free cancellation up to 24h before pickup.\",\n    \"primaryBtn\": \"Browse cars\",\n    \"secondaryBtn\": \"View deals\",\n    \"imageUrl\": \"https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80\",\n    \"scrollHint\": \"Scroll to explore\",\n    \"showBadges\": true,\n    \"signInLabel\": \"Already a member?\",\n    \"adminLabel\": \"Admin panel\"\n  },\n  \"footer\": {\n    \"tagline\": \"Premium car rentals, on demand.\",\n    \"phone\": \"+966 11 234 5678\",\n    \"email\": \"support@rentdrive.sa\",\n    \"address\": \"King Fahd Road, Riyadh, Saudi Arabia\",\n    \"copyright\": \"© 2026 RentDrive Saudi. All rights reserved.\"\n  }\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/site-content",

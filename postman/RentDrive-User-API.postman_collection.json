@@ -88,6 +88,25 @@
       ]
     },
     {
+      "name": "Locations",
+      "item": [
+        {
+          "name": "List pickup/drop-off cities",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations"]
+            },
+            "description": "Lists the active Saudi pickup/drop-off cities sorted by `sortOrder` — Riyadh, Jeddah, Dammam, Al Khobar, Makkah, Madinah, Tabuk, Abha. Each entry carries `name` (English) and `nameAr` (Arabic)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Profile",
       "item": [
         {
@@ -138,7 +157,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"pickupDate\": \"2026-08-20T10:00:00.000Z\",\n  \"returnDate\": \"2026-08-22T10:00:00.000Z\",\n  \"pickupLocation\": \"Times Square Hub\",\n  \"returnLocation\": \"Times Square Hub\",\n  \"extras\": [\"gps\"],\n  \"insurance\": false\n}"
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"carId\": \"{{carId}}\",\n  \"pickupDate\": \"2026-08-20T10:00:00.000Z\",\n  \"returnDate\": \"2026-08-22T10:00:00.000Z\",\n  \"pickupLocation\": \"Jeddah\",\n  \"returnLocation\": \"Jeddah\",\n  \"extras\": [\"gps\"],\n  \"insurance\": false\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/bookings",

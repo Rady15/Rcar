@@ -12,7 +12,7 @@ import {
   Car as CarIcon, Search, MapPin, Calendar, Clock, ArrowLeft, ArrowRight,
   MessageCircle, ChevronDown, Phone, Headphones, Wallet, Truck,
 } from "lucide-react";
-import { CAR_LOCATIONS } from "@/lib/helpers";
+import { useLocations } from "@/hooks/use-locations";
 
 interface YeloHeroProps {
   onSearch: () => void;
@@ -31,6 +31,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
   const {
     lang, setCustomerView, setBrowseCategory, setSearchDraft,
   } = useAppStore();
+  const locations = useLocations();
   const isRtl = lang === "ar";
 
   const [activeTab, setActiveTab] = useState<TabId>("search");
@@ -170,7 +171,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
                         className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"}
                       >
                         <option value="">{tr("field_location_placeholder", lang)}</option>
-                        {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                        {locations.map((loc) => <option key={loc.id} value={loc.name}>{isRtl ? loc.nameAr : loc.name}</option>)}
                       </select>
                       <ChevronDown className={isRtl ? "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" : "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"} />
                     </div>
@@ -256,7 +257,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
                       <MapPin className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                       <select value={location} onChange={(e) => setLocation(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
                         <option value="">{tr("field_location_placeholder", lang)}</option>
-                        {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                        {locations.map((loc) => <option key={loc.id} value={loc.name}>{isRtl ? loc.nameAr : loc.name}</option>)}
                       </select>
                     </div>
                   </div>
@@ -266,7 +267,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
                       <MapPin className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                       <select value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
                         <option value="">{tr("field_location_placeholder", lang)}</option>
-                        {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                        {locations.map((loc) => <option key={loc.id} value={loc.name}>{isRtl ? loc.nameAr : loc.name}</option>)}
                       </select>
                     </div>
                   </div>
@@ -336,7 +337,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
                       <MapPin className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                       <select value={location} onChange={(e) => setLocation(e.target.value)} className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
                         <option value="">{tr("field_location_placeholder", lang)}</option>
-                        {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                        {locations.map((loc) => <option key={loc.id} value={loc.name}>{isRtl ? loc.nameAr : loc.name}</option>)}
                       </select>
                     </div>
                   </div>
@@ -377,7 +378,7 @@ export function YeloHero({ onSearch, onSignIn }: YeloHeroProps) {
                       <Truck className={isRtl ? "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" : "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                       <select className={isRtl ? "w-full pr-10 pl-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer" : "w-full pl-10 pr-3 py-2.5 rounded-lg border border-input bg-background text-sm appearance-none cursor-pointer"}>
                         <option value="">{tr("field_location_placeholder", lang)}</option>
-                        {CAR_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                        {locations.map((loc) => <option key={loc.id} value={loc.name}>{isRtl ? loc.nameAr : loc.name}</option>)}
                       </select>
                     </div>
                   </div>

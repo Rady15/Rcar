@@ -45,7 +45,7 @@ export function CarDetailView() {
     setBookingDraft({
       pickupDate: new Date(Date.now() + 86400000).toISOString().split("T")[0],
       returnDate: new Date(Date.now() + 4 * 86400000).toISOString().split("T")[0],
-      pickupLocation: "New York Downtown", returnLocation: "New York Downtown",
+      pickupLocation: "Riyadh", returnLocation: "Riyadh",
       extras: [], insurance: true,
     });
     setCustomerView("booking");

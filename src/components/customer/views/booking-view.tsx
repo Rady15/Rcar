@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { tr } from "@/lib/i18n";
-import { api, formatCurrency, CAR_LOCATIONS, BOOKING_EXTRAS } from "@/lib/helpers";
+import { api, formatCurrency, BOOKING_EXTRAS } from "@/lib/helpers";
+import { useLocations } from "@/hooks/use-locations";
 import { Car } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,6 +24,7 @@ const EXTRAS_TR: Record<string, { ar: string; en: string; desc_ar: string; desc_
 
 export function BookingView() {
   const { selectedCarId, setSelectedCarId, setCustomerView, user, bookingDraft, setBookingDraft, setLastBookingId, lang } = useAppStore();
+  const locations = useLocations();
   const isRtl = lang === "ar";
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +33,7 @@ export function BookingView() {
   const draft = bookingDraft || {
     pickupDate: new Date(Date.now() + 86400000).toISOString().split("T")[0],
     returnDate: new Date(Date.now() + 4 * 86400000).toISOString().split("T")[0],
-    pickupLocation: "New York Downtown", returnLocation: "New York Downtown",
+    pickupLocation: "Riyadh", returnLocation: "Riyadh",
     extras: [] as string[], insurance: true,
   };
 
@@ -102,8 +104,8 @@ export function BookingView() {
           <Card className="p-5 space-y-4">
             <div className="flex items-center gap-2"><MapPin className="h-5 w-5 text-primary" /><h2 className="font-semibold">{tr("booking_locations", lang)}</h2></div>
             <div className="space-y-3">
-              <div><Label className="text-xs">{tr("field_pickup_location", lang)}</Label><select value={draft.pickupLocation} onChange={(e) => setBookingDraft({ ...draft, pickupLocation: e.target.value })} className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm">{CAR_LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
-              <div><Label className="text-xs">{tr("field_dropoff_location", lang)}</Label><select value={draft.returnLocation} onChange={(e) => setBookingDraft({ ...draft, returnLocation: e.target.value })} className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm">{CAR_LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
+              <div><Label className="text-xs">{tr("field_pickup_location", lang)}</Label><select value={draft.pickupLocation} onChange={(e) => setBookingDraft({ ...draft, pickupLocation: e.target.value })} className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm">{locations.map((l) => <option key={l.id} value={l.name}>{isRtl ? l.nameAr : l.name}</option>)}</select></div>
+              <div><Label className="text-xs">{tr("field_dropoff_location", lang)}</Label><select value={draft.returnLocation} onChange={(e) => setBookingDraft({ ...draft, returnLocation: e.target.value })} className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm">{locations.map((l) => <option key={l.id} value={l.name}>{isRtl ? l.nameAr : l.name}</option>)}</select></div>
             </div>
           </Card>
           <Card className="p-5 space-y-3">

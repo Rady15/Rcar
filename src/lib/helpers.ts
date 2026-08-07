@@ -47,8 +47,7 @@ export const CAR_CATEGORIES = [
 ] as const;
 
 export const CAR_LOCATIONS = [
-  "New York Downtown", "JFK International Airport", "LaGuardia Airport",
-  "Newark Liberty Airport", "Brooklyn Heights", "Times Square Hub",
+  "Riyadh", "Jeddah", "Dammam", "Al Khobar", "Makkah", "Madinah", "Tabuk", "Abha",
 ];
 
 export const BOOKING_EXTRAS = [

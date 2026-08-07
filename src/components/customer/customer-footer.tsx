@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 
 const DEFAULT_FOOTER: FooterContent = {
   tagline: "Premium car rentals, on demand. From economy hybrids to supercars, find your perfect ride.",
-  phone: "+1 (555) 010-2024", email: "support@rentdrive.app",
-  address: "350 5th Ave, New York", copyright: "© 2024 RentDrive Inc. All rights reserved.",
+  phone: "+966 11 234 5678", email: "support@rentdrive.sa",
+  address: "King Fahd Road, Riyadh, Saudi Arabia", copyright: "© 2024 RentDrive Saudi. All rights reserved.",
 };
 
 export function CustomerFooter() {

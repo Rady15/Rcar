@@ -40,12 +40,12 @@ const REVIEWS = [
 ];
 
 const BOOKINGS = [
-  { id: "b1", userId: "u2", carId: "c1", pickupDate: new Date(Date.now() + 7 * 86400000), returnDate: new Date(Date.now() + 10 * 86400000), pickupLocation: "New York Downtown", returnLocation: "New York Downtown", daysCount: 3, pricePerDay: 189, subtotal: 567, insuranceFee: 36, serviceFee: 48.24, total: 651.24, status: "UPCOMING", bookingCode: "RD100001", extras: '["gps","unlimited_miles"]', paymentMethod: "card", paymentStatus: "PAID" },
-  { id: "b2", userId: "u3", carId: "c4", pickupDate: new Date(Date.now() + 14 * 86400000), returnDate: new Date(Date.now() + 17 * 86400000), pickupLocation: "JFK International Airport", returnLocation: "JFK International Airport", daysCount: 3, pricePerDay: 320, subtotal: 960, insuranceFee: 36, serviceFee: 79.68, total: 1075.68, status: "UPCOMING", bookingCode: "RD100002", extras: '["insurance"]', paymentMethod: "card", paymentStatus: "PAID" },
-  { id: "b3", userId: "u4", carId: "c9", pickupDate: new Date(Date.now() - 14 * 86400000), returnDate: new Date(Date.now() - 11 * 86400000), pickupLocation: "Times Square Hub", returnLocation: "Times Square Hub", daysCount: 3, pricePerDay: 125, subtotal: 375, insuranceFee: 36, serviceFee: 32.88, total: 443.88, status: "COMPLETED", bookingCode: "RD100003", extras: '["unlimited_miles"]', paymentMethod: "paypal", paymentStatus: "PAID" },
-  { id: "b4", userId: "u5", carId: "c7", pickupDate: new Date(Date.now() - 30 * 86400000), returnDate: new Date(Date.now() - 23 * 86400000), pickupLocation: "Brooklyn Heights", returnLocation: "LaGuardia Airport", daysCount: 7, pricePerDay: 65, subtotal: 455, insuranceFee: 84, serviceFee: 43.12, total: 582.12, status: "COMPLETED", bookingCode: "RD100004", extras: '["child_seat","gps"]', paymentMethod: "card", paymentStatus: "PAID" },
-  { id: "b5", userId: "u6", carId: "c11", pickupDate: new Date(Date.now() - 5 * 86400000), returnDate: new Date(Date.now() - 2 * 86400000), pickupLocation: "Newark Liberty Airport", returnLocation: "Newark Liberty Airport", daysCount: 3, pricePerDay: 95, subtotal: 285, insuranceFee: 36, serviceFee: 25.68, total: 346.68, status: "COMPLETED", bookingCode: "RD100005", extras: '["insurance"]', paymentMethod: "apple", paymentStatus: "PAID" },
-  { id: "b6", userId: "u2", carId: "c5", pickupDate: new Date(Date.now() - 60 * 86400000), returnDate: new Date(Date.now() - 53 * 86400000), pickupLocation: "New York Downtown", returnLocation: "New York Downtown", daysCount: 7, pricePerDay: 145, subtotal: 1015, insuranceFee: 84, serviceFee: 87.92, total: 1186.92, status: "COMPLETED", bookingCode: "RD100006", extras: '["child_seat","additional_driver"]', paymentMethod: "card", paymentStatus: "PAID" },
+  { id: "b1", userId: "u2", carId: "c1", pickupDate: new Date(Date.now() + 7 * 86400000), returnDate: new Date(Date.now() + 10 * 86400000), pickupLocation: "Riyadh", returnLocation: "Riyadh", daysCount: 3, pricePerDay: 189, subtotal: 567, insuranceFee: 36, serviceFee: 48.24, total: 651.24, status: "UPCOMING", bookingCode: "RD100001", extras: '["gps","unlimited_miles"]', paymentMethod: "card", paymentStatus: "PAID" },
+  { id: "b2", userId: "u3", carId: "c4", pickupDate: new Date(Date.now() + 14 * 86400000), returnDate: new Date(Date.now() + 17 * 86400000), pickupLocation: "Jeddah", returnLocation: "Jeddah", daysCount: 3, pricePerDay: 320, subtotal: 960, insuranceFee: 36, serviceFee: 79.68, total: 1075.68, status: "UPCOMING", bookingCode: "RD100002", extras: '["insurance"]', paymentMethod: "card", paymentStatus: "PAID" },
+  { id: "b3", userId: "u4", carId: "c9", pickupDate: new Date(Date.now() - 14 * 86400000), returnDate: new Date(Date.now() - 11 * 86400000), pickupLocation: "Dammam", returnLocation: "Dammam", daysCount: 3, pricePerDay: 125, subtotal: 375, insuranceFee: 36, serviceFee: 32.88, total: 443.88, status: "COMPLETED", bookingCode: "RD100003", extras: '["unlimited_miles"]', paymentMethod: "paypal", paymentStatus: "PAID" },
+  { id: "b4", userId: "u5", carId: "c7", pickupDate: new Date(Date.now() - 30 * 86400000), returnDate: new Date(Date.now() - 23 * 86400000), pickupLocation: "Al Khobar", returnLocation: "Makkah", daysCount: 7, pricePerDay: 65, subtotal: 455, insuranceFee: 84, serviceFee: 43.12, total: 582.12, status: "COMPLETED", bookingCode: "RD100004", extras: '["child_seat","gps"]', paymentMethod: "card", paymentStatus: "PAID" },
+  { id: "b5", userId: "u6", carId: "c11", pickupDate: new Date(Date.now() - 5 * 86400000), returnDate: new Date(Date.now() - 2 * 86400000), pickupLocation: "Madinah", returnLocation: "Madinah", daysCount: 3, pricePerDay: 95, subtotal: 285, insuranceFee: 36, serviceFee: 25.68, total: 346.68, status: "COMPLETED", bookingCode: "RD100005", extras: '["insurance"]', paymentMethod: "apple", paymentStatus: "PAID" },
+  { id: "b6", userId: "u2", carId: "c5", pickupDate: new Date(Date.now() - 60 * 86400000), returnDate: new Date(Date.now() - 53 * 86400000), pickupLocation: "Riyadh", returnLocation: "Riyadh", daysCount: 7, pricePerDay: 145, subtotal: 1015, insuranceFee: 84, serviceFee: 87.92, total: 1186.92, status: "COMPLETED", bookingCode: "RD100006", extras: '["child_seat","additional_driver"]', paymentMethod: "card", paymentStatus: "PAID" },
 ];
 
 const CATEGORIES = [
@@ -56,6 +56,17 @@ const CATEGORIES = [
   { id: "electric", name: "Electric", nameAr: "كهربائية", slug: "electric", imageUrl: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=600&q=80", sortOrder: 5 },
   { id: "convertible", name: "Convertible", nameAr: "كشف", slug: "convertible", imageUrl: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=600&q=80", sortOrder: 6 },
   { id: "van", name: "Van", nameAr: "فان", slug: "van", imageUrl: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80", sortOrder: 7 },
+];
+
+const LOCATIONS = [
+  { id: "riyadh", name: "Riyadh", nameAr: "الرياض", sortOrder: 1 },
+  { id: "jeddah", name: "Jeddah", nameAr: "جدة", sortOrder: 2 },
+  { id: "dammam", name: "Dammam", nameAr: "الدمام", sortOrder: 3 },
+  { id: "khobar", name: "Al Khobar", nameAr: "الخبر", sortOrder: 4 },
+  { id: "makkah", name: "Makkah", nameAr: "مكة المكرمة", sortOrder: 5 },
+  { id: "madinah", name: "Madinah", nameAr: "المدينة المنورة", sortOrder: 6 },
+  { id: "tabuk", name: "Tabuk", nameAr: "تبوك", sortOrder: 7 },
+  { id: "abha", name: "Abha", nameAr: "أبها", sortOrder: 8 },
 ];
 
 const HERO = { badge: "18+ cars available right now", title: "Drive your", highlightedWord: "dream car,", italicWord: "today.", subtitle: "From fuel-sipping hybrids to roaring supercars. Book in under 60 seconds with free cancellation up to 24h before pickup.", primaryBtn: "Browse cars", secondaryBtn: "View deals", imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80", scrollHint: "Scroll to explore", showBadges: true, signInLabel: "Already a member?", adminLabel: "Admin panel" };
@@ -69,7 +80,7 @@ const HOW = [
   { step: "01", title: "Pick your car", desc: "Browse 18+ hand-picked cars — from hybrids to supercars. Filter by category, price, and features in seconds.", icon: "search" },
   { step: "02", title: "Choose dates & extras", desc: "Select pickup and return dates, choose insurance, add child seats, GPS, or unlimited miles. Pricing updates live.", icon: "calendar" },
   { step: "03", title: "Pay securely", desc: "Lock in your booking with card, Apple Pay, or PayPal. Free cancellation up to 24h before pickup. No surprises.", icon: "shield" },
-  { step: "04", title: "Hit the road", desc: "Show your license at pickup, grab the keys, and drive. Return the car at any of our 6 NYC locations.", icon: "zap" },
+  { step: "04", title: "Hit the road", desc: "Show your license at pickup, grab the keys, and drive. Return the car at any of our 8 Saudi cities — Riyadh, Jeddah, Dammam and more.", icon: "zap" },
 ];
 const TESTIMONIALS = [
   { name: "Michael Chen", role: "Verified Renter", rating: 5, text: "Picked up a Tesla Model S Plaid for a weekend trip. The booking took 45 seconds and the car was immaculate. This is how car rental should work.", initials: "MC" },
@@ -77,9 +88,9 @@ const TESTIMONIALS = [
   { name: "James Whitfield", role: "Business Traveler", rating: 5, text: "I rent cars weekly for client meetings. RentDrive's fleet is newer, prices are lower, and the app actually works. Switched from the big chains.", initials: "JW" },
 ];
 const FINAL_CTA = { title: "Ready to hit the road?", subtitle: "Join thousands of happy renters. Sign up in 30 seconds and book your first car today.", primaryBtn: "Get started", secondaryBtn: "Browse cars", adminLabel: "Admin?" };
-const FOOTER = { tagline: "Premium car rentals, on demand. From economy hybrids to supercars, find your perfect ride.", phone: "+1 (555) 010-2024", email: "support@rentdrive.app", address: "350 5th Ave, New York", copyright: "© 2024 RentDrive Inc. All rights reserved." };
+const FOOTER = { tagline: "Premium car rentals, on demand. From economy hybrids to supercars, find your perfect ride.", phone: "+966 11 234 5678", email: "support@rentdrive.sa", address: "King Fahd Road, Riyadh, Saudi Arabia", copyright: "© 2024 RentDrive Saudi. All rights reserved." };
 const BRANDING = { siteName: "RentDrive", logoEmoji: "🚗", logoUrl: "/logo.png", accentColor: "#d97706" };
-const SEO = { title: "RentDrive — Premium Car Rental Platform", description: "Rent luxury, sports, electric and family cars by the day. Full customer booking platform + admin panel.", keywords: "car rental, luxury cars, sports cars, electric cars, NYC car rental, rent a car", ogImageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80", twitterHandle: "@rentdrive" };
+const SEO = { title: "RentDrive — Premium Car Rental Platform in Saudi Arabia", description: "Rent luxury, sports, electric and family cars by the day across Riyadh, Jeddah and all major Saudi cities. Full customer booking platform + admin panel.", keywords: "car rental, luxury cars, sports cars, electric cars, Saudi car rental, rent a car, Riyadh, Jeddah, Dammam", ogImageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80", twitterHandle: "@rentdrive" };
 
 async function main() {
   console.log("Seeding database...");
@@ -105,6 +116,9 @@ async function main() {
 
   for (const c of CATEGORIES) await db.category.upsert({ where: { id: c.id }, update: c, create: c });
   console.log(`Seeded ${CATEGORIES.length} categories`);
+
+  for (const l of LOCATIONS) await db.location.upsert({ where: { id: l.id }, update: l, create: l });
+  console.log(`Seeded ${LOCATIONS.length} locations`);
 
   for (const r of REVIEWS) {
     const existing = await db.review.findFirst({ where: { userId: r.userId, carId: r.carId } });

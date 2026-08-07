@@ -43,3 +43,9 @@ export interface Deal {
   endDate: string; isActive: boolean;
   car?: Car | null;
 }
+
+export interface Location {
+  id: string; name: string; nameAr: string;
+  sortOrder: number; isActive: boolean;
+  createdAt?: string; updatedAt?: string;
+}

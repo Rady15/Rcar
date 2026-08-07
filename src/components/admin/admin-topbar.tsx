@@ -4,11 +4,13 @@ import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, Car, CalendarCheck, Users, Star, Tag, Settings, Menu, LogOut, ArrowLeft, FileText } from "lucide-react";
+import { LayoutDashboard, Car, CalendarCheck, Users, Star, Tag, Settings, Menu, LogOut, ArrowLeft, FileText, FolderTree, MapPin } from "lucide-react";
 
 const NAV = [
   { view: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { view: "cars", label: "Cars", icon: Car },
+  { view: "categories", label: "Categories", icon: FolderTree },
+  { view: "locations", label: "Locations", icon: MapPin },
   { view: "bookings", label: "Bookings", icon: CalendarCheck },
   { view: "customers", label: "Customers", icon: Users },
   { view: "reviews", label: "Reviews", icon: Star },

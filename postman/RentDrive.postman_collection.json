@@ -489,7 +489,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "categories"]
             },
-            "description": "Lists active categories sorted by `sortOrder`. Falls back to hardcoded defaults (sedan, suv, sports, luxury, electric, convertible, van) when the table is empty."
+            "description": "Lists active categories sorted by `sortOrder`. The 7 defaults (sedan, suv, sports, luxury, electric, convertible, van) are seeded by `npm run db:seed`, so they exist in the DB and can be edited. The API also falls back to hardcoded defaults when the table is empty."
           },
           "response": []
         },
@@ -525,7 +525,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "categories", "category_id_here"]
             },
-            "description": "Partially updates a category. NOTE: reads `id` from the **body**."
+            "description": "Partially updates a category. NOTE: reads `id` from the **body**. Returns `404 Category not found` if the id doesn't exist (no more 500). Use `luxury` to edit one of the seeded defaults."
           },
           "response": []
         },
@@ -540,7 +540,7 @@
               "path": ["api", "categories"],
               "query": [{ "key": "id", "value": "category_id_here", "description": "Category id passed as a query param" }]
             },
-            "description": "Deletes a category by id (query param). Returns `{ success: true }`."
+            "description": "Deletes a category by id (query param). Returns `{ success: true }`, or `404 Category not found` if the id doesn't exist."
           },
           "response": []
         }
@@ -578,6 +578,31 @@
               "path": ["api", "site-content"]
             },
             "description": "Upserts the site content singleton. Any subset of the 8 sections (hero, stats, howItWorks, testimonials, finalCta, footer, branding, seo) may be sent; objects are JSON-stringified for storage."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Upload image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "/path/to/image.png", "description": "Image file. Max 5MB and must have an image/* mime type." }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "upload"]
+            },
+            "description": "Uploads an image file (multipart field `file`) and returns `{ url }` as a **base64 data URL** — the storage-safe approach on Vercel serverless, which has no persistent filesystem. Used by the admin categories view.\n\n- `400` — no `file` field in the multipart body\n- `413` — file larger than 5MB\n- `415` — uploaded file is not an image\n- `500` — upload processing failed"
           },
           "response": []
         }

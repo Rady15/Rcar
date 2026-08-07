@@ -2,7 +2,7 @@
   "info": {
     "name": "RentDrive User API",
     "_postman_id": "d4a9f7c3-2b6e-4d81-a5c2-8f3e6b9d1a04",
-    "description": "User/customer-facing API collection for RentDrive — covers the full account lifecycle: registration, login, profile, bookings and reviews.\n\n**Base URLs**\n- Local dev: `http://localhost:3000`\n- Production: `https://rcar-omega.vercel.app`\n\nSet the `baseUrl` collection variable to switch environments.\n\n**Request bodies**: All mutating endpoints (POST/PATCH) parse a JSON body. A missing/empty or malformed body returns `400 {"error": "Invalid JSON body"}`. Login additionally returns `400 {"error": "Email and password are required"}` if either field is absent.\n\n**Seed accounts**\n- Customer: `michael@example.com` / `demo123`\n- Admin: `admin@rentdrive.app` / `admin123`",
+    "description": "User/customer-facing API collection for RentDrive — covers the full account lifecycle: registration, login, profile, bookings and reviews.\n\n**Base URLs**\n- Local dev: `http://localhost:3000`\n- Production: `https://rcar-omega.vercel.app`\n\nSet the `baseUrl` collection variable to switch environments.\n\n**Request bodies**: All mutating endpoints (POST/PATCH) parse a JSON body. A missing/empty or malformed body returns `400 {\"error\": \"Invalid JSON body\"}`. Login additionally returns `400 {\"error\": \"Email and password are required\"}` if either field is absent.\n\n**Seed accounts**\n- Customer: `michael@example.com` / `demo123`\n- Admin: `admin@rentdrive.app` / `admin123`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

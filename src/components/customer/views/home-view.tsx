@@ -148,7 +148,7 @@ export function HomeView() {
           {/* Scrolling track */}
           <motion.div
             className="flex gap-4 md:gap-6 w-max"
-            animate={{ x: isRtl ? ["-50%", "0%"] : ["0%", "-50%"] }}
+            animate={{ x: isRtl ? ["0%", "50%"] : ["0%", "-50%"] }}
             transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
             style={{ willChange: "transform" }}
           >

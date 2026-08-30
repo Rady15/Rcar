@@ -21,7 +21,9 @@ export class ProductionDB {
   static async create() {
     if (!process.env.DATABASE_URL) { if (process.env.NODE_ENV === 'production') throw new Error('DATABASE_URL is required in production'); return new ProductionDB(null); }
     const mod: any = await import('pg');
-    const pool = new mod.Pool({ connectionString: process.env.DATABASE_URL, max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: 30000, connectionTimeoutMillis: 5000, ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : undefined });
+    const isProd = process.env.NODE_ENV === 'production';
+    const sslEnabled = isProd || process.env.DATABASE_SSL === 'true';
+    const pool = new mod.Pool({ connectionString: process.env.DATABASE_URL, max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000, ssl: sslEnabled ? { rejectUnauthorized: false } : undefined });
     const db = new ProductionDB(pool);
     await db.migrate();
     return db;

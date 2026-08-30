@@ -26,7 +26,7 @@ export class ProductionDB {
     dbUrl = dbUrl.replace(/[?&]channel_binding=[^&]+/gi, '').replace(/\?$/, '');
     const sslHint = /(neon\.tech|supabase|rds\.amazonaws|render\.com|herokuapp|amazonaws|sslmode=require|sslmode=verify)/i.test(dbUrl);
     const sslEnabled = process.env.DATABASE_SSL === 'true' || sslHint || (process.env.NODE_ENV === 'production' && process.env.DATABASE_SSL !== 'false');
-    const pool = new mod.Pool({ connectionString: dbUrl, max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000, ssl: sslEnabled ? { rejectUnauthorized: false } : undefined });
+    const pool = new mod.Pool({ connectionString: dbUrl, max: Number(process.env.DB_POOL_MAX || 2), idleTimeoutMillis: 30000, connectionTimeoutMillis: 5000, ssl: sslEnabled ? { rejectUnauthorized: false } : undefined });
     const db = new ProductionDB(pool);
     await db.migrate();
     return db;

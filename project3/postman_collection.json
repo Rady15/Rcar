@@ -1,0 +1,262 @@
+{
+  "info": {
+    "name": "Al-Rufqah API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/",
+    "description": "API collection for mobile app and admin dashboard. Includes endpoints for authentication, bookings, fleet, offers, and admin operations."
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"fullName\": \"John Doe\", \"email\": \"john@example.com\", \"phone\": \"0123456789\", \"password\": \"Str0ngP@ss1234\" }"
+            }
+          }
+        },
+        {
+          "name": "Google Login (init)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "https://osb.com.sa/api/auth/google"
+          }
+        },
+        {
+          "name": "Google Callback",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "https://osb.com.sa/api/auth/google/callback?code=AUTH_CODE"
+          }
+        },
+        {
+          "name": "Get Current User / Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "alrufqah_session=SESSION_TOKEN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"fullName\": \"Updated Name\", \"phone\": \"0123456789\" }"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking (Pay on Arrival)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "unique-key-123"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"car\": { \"id\": \"car-id-here\" }, \"searchCriteria\": { \"pickupDate\": \"2026-09-01\", \"returnDate\": \"2026-09-05\" }, \"customer\": { \"email\": \"user@example.com\", \"phone\": \"0123456789\" }, \"payment\": { \"method\": \"pay_on_arrival\" } }"
+            }
+          }
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "alrufqah_session=SESSION_TOKEN"
+              }
+            ],
+            "url": "https://osb.com.sa/api/bookings/my"
+          }
+        },
+        {
+          "name": "Lookup Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"bookingId\": \"RUF-63255\", \"secret\": \"registered-phone\" }"
+            }
+          }
+        },
+        {
+          "name": "Calculate Quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"car\": { \"id\": \"car-id-here\" }, \"searchCriteria\": { \"pickupDate\": \"2026-09-01\", \"returnDate\": \"2026-09-05\" }, \"protectionPlan\": { \"id\": \"plan-id\" }, \"selectedAddons\": [] }"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fleet (Cars)",
+      "item": [
+        {
+          "name": "List Cars",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "https://osb.com.sa/api/cars"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Offers & Promo Codes",
+      "item": [
+        {
+          "name": "List Offers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "https://osb.com.sa/api/content/offers"
+          }
+        },
+        {
+          "name": "Apply Promo Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "alrufqah_session=SESSION_TOKEN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"promoCode\": \"WEEKEND20\" }"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "item": [
+        {
+          "name": "List All Bookings (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "alrufqah_session=ADMIN_SESSION_TOKEN"
+              }
+            ],
+            "url": "https://osb.com.sa/api/bookings"
+          }
+        },
+        {
+          "name": "List Users / Bookings Count (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "alrufqah_session=ADMIN_SESSION_TOKEN"
+              }
+            ],
+            "url": "https://osb.com.sa/api/settings/payments"
+          }
+        },
+        {
+          "name": "Manage Content (Offers)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "alrufqah_session=ADMIN_SESSION_TOKEN"
+              }
+            ],
+            "url": "https://osb.com.sa/api/content/offers"
+          }
+        },
+        {
+          "name": "Add/Edit Offer (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "alrufqah_session=ADMIN_SESSION_TOKEN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"title\": { \"ar\": \"عرض الأسبوع\", \"en\": \"Weekly Offer\" }, \"description\": { \"ar\": \"عرض خاص لهذا الأسبوع\", \"en\": \"Special offer for this week\" }, \"discount\": \"20\", \"code\": \"WEEKEND20\", \"category\": \"weekend\", \"validUntil\": \"2026-12-31\", \"image\": \"https://example.com/offer.jpg\", \"isActive\": true }"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://YOUR-PRODUCTION-DOMAIN"
+    }
+  ]
+}

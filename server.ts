@@ -4,7 +4,6 @@ import express, { Request, Response, NextFunction } from 'express';
 import path from 'node:path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import { createServer as createViteServer } from 'vite';
 import { ProductionDB } from './backend/production-db';
 import { AlRufqahDataStore } from './backend/db';
 import type { AppUser, BookingDetails, Car, BlogPost, Branch, RoadsideTicket, InspectionReport, CorporateInquiry, SystemAuditLog, ContactMessage, Category } from './src/types';
@@ -198,7 +197,7 @@ async function getPaymentConfig(){
   return { enabled:v.enabled===true, secretKey:decryptSecret(v.apiKey)||process.env.STRIPE_SECRET_KEY, webhookSecret:decryptSecret(v.webhookSecret)||process.env.STRIPE_WEBHOOK_SECRET };
 }
 
-async function start(){
+export async function createApp(opts: { serveStatic?: boolean } = {}): Promise<express.Express> {
   const db=await ProductionDB.create();
   runtimeDb = db;
   if (isProd && process.env.APP_URL && !/^https:\/\//i.test(process.env.APP_URL)) throw new Error('APP_URL must use HTTPS in production');
@@ -302,7 +301,7 @@ async function start(){
       }
     } catch(e){ console.error('notification worker error',e); }
   };
-  const workerTimer=setInterval(notificationWorker,5000); void workerTimer;
+  if (!process.env.VERCEL) { const workerTimer=setInterval(notificationWorker,5000); void workerTimer; }
 
 
   app.post('/api/auth/register', rateLimit(6,15*60*1000), async (req,res)=>{
@@ -638,8 +637,14 @@ app.put('/api/users/:id',auth(),role('admin'),async(req,res)=>{
   app.get('/robots.txt',(_req,res)=>{res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /dashboard\nDisallow: /login\nSitemap: ${process.env.APP_URL || 'http://localhost:3000'}/sitemap.xml\n`) });
   app.get('/sitemap.xml',(_req,res)=>{const base=(process.env.APP_URL||'http://localhost:3000').replace(/\/$/,'');const pages=['/','/fleet','/branches','/offers','/corporate','/subscription','/used-cars','/loyalty','/manage-booking','/about','/faq','/contact','/blog'];const urls=pages.map(p=>`<url><loc>${base}${p}</loc><changefreq>weekly</changefreq><priority>${p==='/'?'1.0':'0.7'}</priority></url>`).join('');res.type('application/xml').send(`<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">${urls}</urlset>`) });
 
-  if(!isProd){const vite=await createViteServer({server:{middlewareMode:true},appType:'spa'});app.use(vite.middlewares)}else{const distPath=path.join(process.cwd(),'dist');app.use(express.static(distPath,{maxAge:'1y',index:false}));app.get('*',(req,res)=>{const site=String(process.env.APP_URL||'').replace(/\/$/,''); const file=path.join(distPath,'index.html'); if(!site) return res.sendFile(file); return res.type('html').send(fs.readFileSync(file,'utf8').replaceAll('__SITE_URL__',site));})}
+  if(opts.serveStatic){
+    if(!isProd){const { createServer: createViteServer } = await import('vite'); const vite=await createViteServer({server:{middlewareMode:true},appType:'spa'});app.use(vite.middlewares)}else{const distPath=path.join(process.cwd(),'dist');app.use(express.static(distPath,{maxAge:'1y',index:false}));app.get('*',(req,res)=>{const site=String(process.env.APP_URL||'').replace(/\/$/,''); const file=path.join(distPath,'index.html'); if(!site) return res.sendFile(file); return res.type('html').send(fs.readFileSync(file,'utf8').replaceAll('__SITE_URL__',site));})}
+  }
   app.use((err:any,req:Request,res:Response,_next:NextFunction)=>{console.error({requestId:(req as any).requestId,error:err});if(!res.headersSent)res.status(500).json({error:'Internal server error'})});
-  app.listen(PORT,'0.0.0.0',()=>console.log(`[Al-Rufqah] ${isProd?'production':'development'} server listening on :${PORT} | db=${db.persistent?'postgresql':'memory-dev'}`));
+  return app;
 }
-start().catch(err=>{console.error('Fatal startup error',err);process.exit(1)});
+
+if (!process.env.VERCEL) {
+  createApp({ serveStatic: true }).then(app => app.listen(PORT,'0.0.0.0',()=>console.log(`[Al-Rufqah] ${isProd?'production':'development'} server listening on :${PORT} | db=${runtimeDb?.persistent?'postgresql':'memory-dev'}`)))
+    .catch(err=>{console.error('Fatal startup error',err);process.exit(1)});
+}

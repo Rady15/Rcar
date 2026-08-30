@@ -10,6 +10,7 @@ export async function api<T>(path:string, options:RequestInit={}) : Promise<T> {
     const res = await fetch(`${API_BASE}${path}`, { ...options, headers, credentials:'include', signal:controller.signal });
     const text = await res.text();
     let data:any = null; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+    if (typeof data === 'string') throw new Error(`Invalid (non-JSON) response from ${path}`);
     if(!res.ok) throw new Error(data?.error || `Request failed (${res.status})`);
     return data as T;
   } catch (err:any) {

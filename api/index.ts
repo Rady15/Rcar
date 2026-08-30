@@ -7,6 +7,7 @@ function getApp() {
   if (!appPromise) {
     appPromise = createApp({ serveStatic: false }).catch((err) => {
       appPromise = null;
+      console.error('[api] createApp failed:', err);
       throw err;
     });
   }
@@ -18,8 +19,9 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     const app = await getApp();
     return app(req, res);
   } catch (err: any) {
+    console.error('[api] request handler failed:', err);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ error: err?.message || 'Function initialization failed' }));
+    res.end(JSON.stringify({ error: err?.message || 'Function initialization failed', stack: process.env.NODE_ENV !== 'production' ? err?.stack : undefined }));
   }
 }

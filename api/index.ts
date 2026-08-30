@@ -3,9 +3,16 @@ import { createApp } from '../server';
 
 let appPromise: Promise<any> | null = null;
 
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`${label} timed out after ${ms}ms`)), ms)),
+  ]);
+}
+
 function getApp() {
   if (!appPromise) {
-    appPromise = createApp({ serveStatic: false }).catch((err) => {
+    appPromise = withTimeout(createApp({ serveStatic: false }), 12000, 'createApp').catch((err) => {
       appPromise = null;
       console.error('[api] createApp failed:', err);
       throw err;
@@ -27,7 +34,7 @@ async function runDebug(): Promise<Record<string, any>> {
   };
   try {
     const { ProductionDB } = await import('../backend/production-db');
-    const db = await ProductionDB.create();
+    const db = await withTimeout(ProductionDB.create(), 10000, 'ProductionDB.create');
     await db.ping();
     info.dbPing = 'ok';
     info.dbType = db.persistent ? 'postgresql' : 'memory';

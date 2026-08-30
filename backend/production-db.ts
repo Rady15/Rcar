@@ -21,9 +21,10 @@ export class ProductionDB {
   static async create() {
     if (!process.env.DATABASE_URL) { if (process.env.NODE_ENV === 'production') throw new Error('DATABASE_URL is required in production'); return new ProductionDB(null); }
     const mod: any = await import('pg');
-    const isProd = process.env.NODE_ENV === 'production';
-    const sslEnabled = isProd || process.env.DATABASE_SSL === 'true';
-    const pool = new mod.Pool({ connectionString: process.env.DATABASE_URL, max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000, ssl: sslEnabled ? { rejectUnauthorized: false } : undefined });
+    const dbUrl = process.env.DATABASE_URL || '';
+    const sslHint = /(neon\.tech|supabase|rds\.amazonaws|render\.com|herokuapp|amazonaws|sslmode=require|sslmode=verify|channel_binding=)/i.test(dbUrl);
+    const sslEnabled = process.env.DATABASE_SSL === 'true' || sslHint || (process.env.NODE_ENV === 'production' && process.env.DATABASE_SSL !== 'false');
+    const pool = new mod.Pool({ connectionString: dbUrl, max: Number(process.env.DB_POOL_MAX || 10), idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000, ssl: sslEnabled ? { rejectUnauthorized: false } : undefined });
     const db = new ProductionDB(pool);
     await db.migrate();
     return db;
